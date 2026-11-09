@@ -1,0 +1,3631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MANTA | Almuerzos Caseros del Día</title>
+  <meta name="description" content="MANTA: reserva y pide tu almuerzo casero. Elige tu entrada y fondo del día con stock en tiempo real y envíos programados cada 30 minutos.">
+  
+  <style>
+    /* ==========================================================================
+       VARIABLES Y PALETA DE COLORES CÁLIDOS (FONDO BLANCO)
+       ========================================================================== */
+    :root {
+      /* Fondo blanco y tonos neutros suaves */
+      --blanco: #ffffff;
+      --fondo-suave: #fdfbf9;
+      --fondo-gris: #f7f4ef;
+      
+      /* Terracota para botones y llamadas a la acción */
+      --terracota: #c55734;
+      --terracota-hover: #aa4525;
+      --terracota-claro: #fbf1ec;
+      
+      /* Verde oliva para estados, tags y badges */
+      --oliva: #596b44;
+      --oliva-hover: #485736;
+      --oliva-claro: #eff3ea;
+      
+      /* Tonos tierra cálidos */
+      --tierra: #8d6b4f;
+      --tierra-claro: #f5efe9;
+      
+      /* Tipografía con alto contraste */
+      --texto-oscuro: #26211d;
+      --texto-secundario: #635b54;
+      --texto-suave: #8a8077;
+      
+      /* Bordes y estados */
+      --borde-suave: #eedfcf;
+      --borde-activo: #c55734;
+      --alerta-fondo: #fcf1eb;
+      --alerta-texto: #b44421;
+      --exito-fondo: #eef6ed;
+      --exito-texto: #37632a;
+      
+      /* Bordes redondeados y sombras sutiles */
+      --radio-sm: 8px;
+      --radio-md: 14px;
+      --radio-lg: 20px;
+      --radio-pill: 9999px;
+      --sombra-tarjeta: 0 4px 16px rgba(60, 40, 30, 0.05);
+      --sombra-hover: 0 8px 24px rgba(60, 40, 30, 0.1);
+      --sombra-barra: 0 -4px 20px rgba(40, 30, 20, 0.08);
+
+      --fuente-sistema: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --transicion: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--blanco);
+      color: var(--texto-oscuro);
+      font-family: var(--fuente-sistema);
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       CABECERA Y PROGRESO
+       ========================================================================== */
+    .header-manta {
+      background-color: rgba(255, 255, 255, 0.97);
+      border-bottom: 1px solid var(--borde-suave);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-contenedor {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-marca {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .logo-icono {
+      width: 38px;
+      height: 38px;
+      background-color: var(--terracota);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blanco);
+      box-shadow: 0 3px 10px rgba(197, 87, 52, 0.3);
+    }
+
+    .logo-texto {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-titulo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: var(--terracota);
+      line-height: 1;
+    }
+
+    .logo-subtitulo {
+      font-size: 0.72rem;
+      color: var(--texto-suave);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .header-acciones {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-estado {
+      background-color: var(--oliva-claro);
+      color: var(--oliva);
+      padding: 6px 12px;
+      border-radius: var(--radio-pill);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(89, 107, 68, 0.2);
+    }
+
+    .punto-activo {
+      width: 8px;
+      height: 8px;
+      background-color: var(--oliva);
+      border-radius: 50%;
+      animation: pulso 2s infinite ease-in-out;
+    }
+
+    @keyframes pulso {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .btn-acceso-dueno {
+      background-color: var(--fondo-suave);
+      border: 1px solid var(--borde-suave);
+      color: var(--texto-secundario);
+      padding: 6px 12px;
+      border-radius: var(--radio-pill);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transicion);
+    }
+
+    .btn-acceso-dueno:hover {
+      background-color: var(--texto-oscuro);
+      color: var(--blanco);
+      border-color: var(--texto-oscuro);
+    }
+
+    /* Barra de pasos */
+    .pasos-indicador {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--fondo-suave);
+      border-bottom: 1px solid var(--borde-suave);
+      padding: 8px 16px;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .paso-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--texto-suave);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .paso-numero {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background-color: var(--borde-suave);
+      color: var(--texto-secundario);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .paso-item.activo {
+      color: var(--terracota);
+      font-weight: 800;
+    }
+
+    .paso-item.activo .paso-numero {
+      background-color: var(--terracota);
+      color: var(--blanco);
+    }
+
+    .paso-item.completado {
+      color: var(--oliva);
+    }
+
+    .paso-item.completado .paso-numero {
+      background-color: var(--oliva);
+      color: var(--blanco);
+    }
+
+    .paso-separador {
+      width: 14px;
+      height: 1px;
+      background-color: var(--borde-suave);
+    }
+
+    /* ==========================================================================
+       ESTRUCTURA PRINCIPAL Y PANTALLAS
+       ========================================================================== */
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 20px 125px 20px;
+      position: relative;
+    }
+
+    .pantalla {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .pantalla.activa {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: aparecerSuave 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes aparecerSuave {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn-volver {
+      background: none;
+      border: none;
+      color: var(--texto-secundario);
+      font-size: 0.92rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 8px 14px;
+      margin-bottom: 16px;
+      border-radius: var(--radio-pill);
+      transition: var(--transicion);
+    }
+
+    .btn-volver:hover {
+      background-color: var(--fondo-suave);
+      color: var(--terracota);
+    }
+
+    .seccion-encabezado {
+      margin-bottom: 24px;
+    }
+
+    .seccion-etiqueta {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--oliva);
+      margin-bottom: 4px;
+    }
+
+    .seccion-titulo {
+      font-size: 1.85rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: var(--texto-oscuro);
+      line-height: 1.25;
+    }
+
+    .seccion-subtitulo {
+      font-size: 1rem;
+      color: var(--texto-secundario);
+      margin-top: 6px;
+    }
+
+    /* ==========================================================================
+       PANTALLA 1: INICIO
+       ========================================================================== */
+    .hero-inicio {
+      text-align: center;
+      padding: 30px 10px 40px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .hero-insignia {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--terracota-claro);
+      color: var(--terracota);
+      padding: 7px 16px;
+      border-radius: var(--radio-pill);
+      font-size: 0.88rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      border: 1px solid rgba(197, 87, 52, 0.2);
+    }
+
+    .hero-titulo {
+      font-size: 2.7rem;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      color: var(--texto-oscuro);
+      margin-bottom: 16px;
+    }
+
+    .hero-titulo span {
+      color: var(--terracota);
+    }
+
+    .hero-descripcion {
+      font-size: 1.15rem;
+      color: var(--texto-secundario);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .banner-horario-almuerzo {
+      background-color: var(--fondo-suave);
+      border: 1.5px dashed var(--borde-suave);
+      border-radius: var(--radio-md);
+      padding: 14px 20px;
+      margin: 0 auto 30px auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .icono-reloj {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--terracota);
+      color: var(--blanco);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .hero-tarjetas-cualidades {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 36px 0 10px 0;
+      text-align: left;
+    }
+
+    .tarjeta-cualidad {
+      background-color: var(--fondo-suave);
+      border: 1px solid var(--borde-suave);
+      padding: 20px;
+      border-radius: var(--radio-md);
+      transition: var(--transicion);
+    }
+
+    .tarjeta-cualidad:hover {
+      border-color: var(--terracota);
+      transform: translateY(-2px);
+    }
+
+    .tarjeta-cualidad h4 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--texto-oscuro);
+    }
+
+    .tarjeta-cualidad p {
+      font-size: 0.84rem;
+      color: var(--texto-suave);
+      line-height: 1.4;
+    }
+
+    /* ==========================================================================
+       PANTALLA 2: MENÚ DEL DÍA (EN 2 COLUMNAS: ENTRADA Y FONDO)
+       ========================================================================== */
+    .banner-precio-menu {
+      background-color: var(--terracota-claro);
+      border: 1.5px solid rgba(197, 87, 52, 0.25);
+      border-radius: var(--radio-md);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .banner-precio-info h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--terracota);
+    }
+
+    .banner-precio-info p {
+      font-size: 0.86rem;
+      color: var(--texto-secundario);
+    }
+
+    .badge-precio-destacado {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--terracota);
+    }
+
+    /* Distribución en 2 Columnas */
+    .menu-dos-columnas-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .menu-dos-columnas-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+    }
+
+    .columna-seleccion {
+      background-color: var(--blanco);
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-lg);
+      padding: 20px;
+      box-shadow: var(--sombra-tarjeta);
+    }
+
+    .columna-cabecera {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--fondo-suave);
+    }
+
+    .columna-titulo-grupo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .numero-columna-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--terracota);
+      color: var(--blanco);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 900;
+    }
+
+    .columna-titulo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--texto-oscuro);
+    }
+
+    .columna-estado-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--oliva);
+      background-color: var(--oliva-claro);
+      padding: 4px 10px;
+      border-radius: var(--radio-pill);
+    }
+
+    .lista-platos-columna {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Tarjeta individual de Plato (Entrada o Fondo) */
+    .tarjeta-plato-opcion {
+      border: 2px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: var(--transicion);
+      background-color: var(--blanco);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      user-select: none;
+    }
+
+    .tarjeta-plato-opcion:hover:not(.agotado) {
+      border-color: var(--terracota);
+      background-color: var(--fondo-suave);
+      transform: translateY(-2px);
+    }
+
+    .tarjeta-plato-opcion.seleccionada {
+      border-color: var(--terracota);
+      background-color: var(--terracota-claro);
+      box-shadow: 0 4px 14px rgba(197, 87, 52, 0.15);
+    }
+
+    .tarjeta-plato-opcion.agotado {
+      opacity: 0.55;
+      background-color: var(--fondo-gris);
+      cursor: not-allowed;
+      border-color: #ddd;
+    }
+
+    .info-plato-opcion {
+      flex: 1;
+    }
+
+    .nombre-plato-opcion {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--texto-oscuro);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+
+    .desc-plato-opcion {
+      font-size: 0.8rem;
+      color: var(--texto-suave);
+    }
+
+    .badge-stock {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radio-pill);
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .badge-stock.disponible {
+      background-color: var(--oliva-claro);
+      color: var(--oliva);
+    }
+
+    .badge-stock.poco-stock {
+      background-color: #fdf2e9;
+      color: #b75916;
+    }
+
+    .badge-stock.agotado-tag {
+      background-color: #f5ebe6;
+      color: #9c4125;
+      font-weight: 800;
+    }
+
+    .check-circulo {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--borde-suave);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transicion);
+    }
+
+    .tarjeta-plato-opcion.seleccionada .check-circulo {
+      border-color: var(--terracota);
+      background-color: var(--terracota);
+      color: var(--blanco);
+    }
+
+    /* Sub-selector especial para Pallares o Arverjitas */
+    .caja-subopciones-proteina {
+      margin-top: 14px;
+      padding: 16px;
+      background-color: var(--fondo-suave);
+      border-radius: var(--radio-md);
+      border: 1.5px dashed var(--terracota);
+      animation: aparecerSuave 0.25s ease;
+    }
+
+    .subopcion-titulo {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--terracota);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .subopciones-chips-grupo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .chip-subopcion {
+      background-color: var(--blanco);
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-pill);
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--texto-secundario);
+      cursor: pointer;
+      transition: var(--transicion);
+    }
+
+    .chip-subopcion:hover {
+      border-color: var(--terracota);
+      color: var(--terracota);
+    }
+
+    .chip-subopcion.activo {
+      background-color: var(--terracota);
+      border-color: var(--terracota);
+      color: var(--blanco);
+    }
+
+    /* ==========================================================================
+       PANTALLA 3: COMPLEMENTOS / ADICIONALES
+       ========================================================================== */
+    .bloque-categoria {
+      margin-bottom: 32px;
+    }
+
+    .categoria-titulo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--texto-oscuro);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--tierra-claro);
+    }
+
+    .categoria-icono {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background-color: var(--oliva-claro);
+      color: var(--oliva);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .grilla-complementos {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 650px) {
+      .grilla-complementos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .tarjeta-complemento {
+      background-color: var(--blanco);
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--sombra-tarjeta);
+      transition: var(--transicion);
+    }
+
+    .tarjeta-complemento:hover {
+      border-color: var(--terracota);
+      box-shadow: var(--sombra-hover);
+    }
+
+    .tarjeta-complemento.tiene-items {
+      border-color: var(--oliva);
+      background-color: var(--oliva-claro);
+    }
+
+    .info-complemento {
+      flex: 1;
+    }
+
+    .nombre-complemento {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--texto-oscuro);
+      margin-bottom: 2px;
+    }
+
+    .desc-complemento {
+      font-size: 0.8rem;
+      color: var(--texto-suave);
+      margin-bottom: 4px;
+    }
+
+    .precio-complemento {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: var(--terracota);
+    }
+
+    .controles-cantidad {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-cantidad {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--borde-suave);
+      background-color: var(--blanco);
+      color: var(--texto-oscuro);
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transicion);
+      user-select: none;
+    }
+
+    .btn-cantidad:hover:not(:disabled) {
+      background-color: var(--terracota);
+      border-color: var(--terracota);
+      color: var(--blanco);
+    }
+
+    .btn-cantidad:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .numero-cantidad {
+      font-size: 1rem;
+      font-weight: 800;
+      min-width: 22px;
+      text-align: center;
+      color: var(--texto-oscuro);
+    }
+
+    /* Caja de resumen en pantalla de complementos */
+    .caja-resumen-lateral {
+      background-color: var(--fondo-suave);
+      border: 1px solid var(--borde-suave);
+      border-radius: var(--radio-lg);
+      padding: 22px;
+      margin-top: 30px;
+    }
+
+    .caja-resumen-titulo {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--texto-oscuro);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .lista-resumen-rapido {
+      list-style: none;
+      font-size: 0.92rem;
+      color: var(--texto-secundario);
+    }
+
+    .item-resumen-rapido {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--borde-suave);
+    }
+
+    .item-resumen-rapido:last-child {
+      border-bottom: none;
+    }
+
+    /* ==========================================================================
+       PANTALLA 4: MÉTODO DE PAGO, DIRECCIÓN Y HORARIO DE ENVÍO
+       ========================================================================== */
+    .layout-formulario {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .layout-formulario {
+        grid-template-columns: 1.25fr 1fr;
+      }
+    }
+
+    .tarjeta-formulario {
+      background-color: var(--blanco);
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-lg);
+      padding: 24px;
+      box-shadow: var(--sombra-tarjeta);
+    }
+
+    .grupo-campo {
+      margin-bottom: 20px;
+    }
+
+    .etiqueta-campo {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--texto-oscuro);
+      margin-bottom: 6px;
+    }
+
+    .etiqueta-campo span {
+      color: var(--terracota);
+    }
+
+    .input-texto {
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 0.98rem;
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      background-color: var(--blanco);
+      color: var(--texto-oscuro);
+      font-family: inherit;
+      transition: var(--transicion);
+    }
+
+    .input-texto:focus {
+      outline: none;
+      border-color: var(--terracota);
+      box-shadow: 0 0 0 3px rgba(197, 87, 52, 0.15);
+    }
+
+    /* Selector de tipo de entrega: Delivery o Recojo */
+    .tabs-tipo-entrega {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .btn-tab-entrega {
+      padding: 12px;
+      border: 2px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      background-color: var(--blanco);
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--texto-secundario);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transicion);
+    }
+
+    .btn-tab-entrega.activo {
+      border-color: var(--terracota);
+      background-color: var(--terracota-claro);
+      color: var(--terracota);
+    }
+
+    /* Chips de horarios de envío: 12:00 PM a 3:30 PM (cada 30 min) */
+    .chips-horas {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip-hora {
+      background-color: var(--fondo-suave);
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-pill);
+      padding: 8px 10px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--texto-secundario);
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transicion);
+    }
+
+    .chip-hora:hover {
+      border-color: var(--terracota);
+      color: var(--terracota);
+    }
+
+    .chip-hora.activo {
+      background-color: var(--terracota);
+      border-color: var(--terracota);
+      color: var(--blanco);
+    }
+
+    /* Métodos de Pago: SOLO Efectivo y Billeteras Digitales (Yape/Plin) */
+    .opciones-pago {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .opcion-pago-card {
+      border: 2px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: var(--transicion);
+      background-color: var(--blanco);
+    }
+
+    .opcion-pago-card:hover {
+      border-color: var(--terracota);
+    }
+
+    .opcion-pago-card.seleccionado {
+      border-color: var(--terracota);
+      background-color: var(--terracota-claro);
+    }
+
+    .radio-personalizado {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--borde-suave);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transicion);
+    }
+
+    .opcion-pago-card.seleccionado .radio-personalizado {
+      border-color: var(--terracota);
+      background-color: var(--terracota);
+    }
+
+    .radio-personalizado::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background-color: var(--blanco);
+      border-radius: 50%;
+      display: block;
+      opacity: 0;
+    }
+
+    .opcion-pago-card.seleccionado .radio-personalizado::after {
+      opacity: 1;
+    }
+
+    .info-opcion-pago {
+      flex: 1;
+    }
+
+    .titulo-pago {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--texto-oscuro);
+    }
+
+    .desc-pago {
+      font-size: 0.82rem;
+      color: var(--texto-suave);
+      margin-top: 2px;
+    }
+
+    .badge-pago-tags {
+      display: inline-flex;
+      gap: 6px;
+      margin-top: 5px;
+    }
+
+    .tag-yape {
+      background-color: #6a1a7a;
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .tag-plin {
+      background-color: #00afaa;
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .campo-vuelto {
+      margin-top: 10px;
+      padding: 12px 14px;
+      background-color: var(--fondo-suave);
+      border-radius: var(--radio-md);
+      border: 1px dashed var(--borde-suave);
+      animation: aparecerSuave 0.25s ease;
+    }
+
+    .campo-vuelto label {
+      font-size: 0.82rem;
+      color: var(--texto-secundario);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .mensaje-error {
+      background-color: var(--alerta-fondo);
+      color: var(--alerta-texto);
+      padding: 12px 16px;
+      border-radius: var(--radio-md);
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-top: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(180, 68, 33, 0.2);
+    }
+
+    .mensaje-error.visible {
+      display: flex;
+    }
+
+    /* Resumen Lateral en Pago */
+    .tarjeta-resumen-pedido {
+      background-color: var(--fondo-suave);
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-lg);
+      padding: 22px;
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+
+    .titulo-resumen {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--texto-oscuro);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--borde-suave);
+      margin-bottom: 14px;
+    }
+
+    .linea-detalle {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+    }
+
+    .linea-detalle-nombre {
+      font-weight: 700;
+      color: var(--texto-oscuro);
+      flex: 1;
+      padding-right: 12px;
+    }
+
+    .linea-detalle-precio {
+      font-weight: 800;
+      color: var(--texto-oscuro);
+      white-space: nowrap;
+    }
+
+    .linea-total-resumen {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 2px solid var(--borde-suave);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .linea-total-resumen span {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--texto-oscuro);
+    }
+
+    .linea-total-resumen .total-monto {
+      font-size: 1.6rem;
+      color: var(--terracota);
+      font-weight: 900;
+    }
+
+    /* ==========================================================================
+       PANTALLA 5: CONFIRMACIÓN Y REGISTRO
+       ========================================================================== */
+    .confirmacion-contenedor {
+      max-width: 650px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 10px 0 30px;
+    }
+
+    .icono-exito {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background-color: var(--oliva);
+      color: var(--blanco);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 24px rgba(89, 107, 68, 0.35);
+      animation: escalaEntrada 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes escalaEntrada {
+      0% { transform: scale(0.4); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .titulo-confirmacion {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--texto-oscuro);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .mensaje-confirmacion {
+      font-size: 1.05rem;
+      color: var(--texto-secundario);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .ticket-pedido {
+      background-color: var(--fondo-suave);
+      border: 1px solid var(--borde-suave);
+      border-radius: var(--radio-lg);
+      padding: 24px;
+      text-align: left;
+      margin-bottom: 28px;
+      box-shadow: var(--sombra-hover);
+    }
+
+    .ticket-cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1.5px dashed var(--borde-suave);
+      margin-bottom: 16px;
+    }
+
+    .codigo-pedido {
+      font-size: 0.82rem;
+      color: var(--texto-suave);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .codigo-pedido strong {
+      font-size: 1.25rem;
+      color: var(--terracota);
+      font-weight: 900;
+      display: block;
+    }
+
+    .ticket-badge-estado {
+      background-color: var(--oliva-claro);
+      color: var(--oliva);
+      padding: 5px 12px;
+      border-radius: var(--radio-pill);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .datos-cliente-ticket {
+      background-color: var(--blanco);
+      border-radius: var(--radio-md);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--borde-suave);
+      font-size: 0.88rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .dato-cliente-item strong {
+      display: block;
+      font-size: 0.74rem;
+      color: var(--texto-suave);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dato-cliente-full {
+      grid-column: 1 / -1;
+    }
+
+    .ticket-articulos {
+      list-style: none;
+      margin-bottom: 16px;
+    }
+
+    .ticket-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 0.92rem;
+      border-bottom: 1px solid rgba(238, 223, 207, 0.6);
+    }
+
+    .ticket-item:last-child {
+      border-bottom: none;
+    }
+
+    .ticket-total {
+      padding-top: 14px;
+      border-top: 2px solid var(--texto-oscuro);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ticket-total span {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .ticket-total .monto {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--terracota);
+    }
+
+    .ticket-nota {
+      font-size: 0.84rem;
+      color: var(--texto-suave);
+      text-align: center;
+      margin-top: 14px;
+      font-style: italic;
+    }
+
+    .caja-aviso-registro-dueno {
+      background-color: var(--exito-fondo);
+      border: 1px solid rgba(55, 99, 42, 0.2);
+      border-radius: var(--radio-md);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--exito-texto);
+      text-align: left;
+    }
+
+    /* ==========================================================================
+       MODAL: PANEL PRIVADO DEL DUEÑO (REGISTRO DE ENVÍOS Y STOCK)
+       ========================================================================== */
+    .modal-dueno-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(30, 25, 20, 0.65);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-dueno-backdrop.activo {
+      display: flex;
+    }
+
+    .modal-dueno-contenido {
+      background-color: var(--blanco);
+      border-radius: var(--radio-lg);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+      padding: 24px;
+      position: relative;
+    }
+
+    .modal-cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--fondo-suave);
+      margin-bottom: 20px;
+    }
+
+    .btn-cerrar-modal {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--texto-suave);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transicion);
+    }
+
+    .btn-cerrar-modal:hover {
+      background-color: var(--fondo-suave);
+      color: var(--texto-oscuro);
+    }
+
+    .dueno-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .dueno-stat-card {
+      background-color: var(--fondo-suave);
+      border: 1px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      padding: 16px;
+    }
+
+    .dueno-stat-card span {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--texto-suave);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dueno-stat-card strong {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--terracota);
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* Tabla de Pedidos y Envíos */
+    .tabla-envios-contenedor {
+      overflow-x: auto;
+      border: 1px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      margin-bottom: 24px;
+    }
+
+    .tabla-envios {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    .tabla-envios th {
+      background-color: var(--fondo-suave);
+      color: var(--texto-secundario);
+      padding: 12px 14px;
+      font-weight: 800;
+      border-bottom: 1.5px solid var(--borde-suave);
+      white-space: nowrap;
+    }
+
+    .tabla-envios td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--borde-suave);
+      vertical-align: top;
+    }
+
+    .tabla-envios tr:hover {
+      background-color: #fdfdfc;
+    }
+
+    .estado-envio-pill {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radio-pill);
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .estado-pendiente { background-color: #fef5e7; color: #b7791f; }
+    .estado-en-camino { background-color: #e8f4fd; color: #1e6bb8; }
+    .estado-entregado { background-color: var(--oliva-claro); color: var(--oliva); }
+
+    /* Control de Stock en el Panel */
+    .stock-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stock-admin-item {
+      background-color: var(--fondo-suave);
+      border: 1px solid var(--borde-suave);
+      border-radius: var(--radio-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stock-input {
+      width: 60px;
+      padding: 6px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      text-align: center;
+      border: 1.5px solid var(--borde-suave);
+      border-radius: var(--radio-sm);
+    }
+
+    /* ==========================================================================
+       BOTONES Y ESTILOS DE ACCIÓN
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 800;
+      border-radius: var(--radio-pill);
+      border: none;
+      cursor: pointer;
+      transition: var(--transicion);
+      text-decoration: none;
+      min-height: 52px;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-terracota {
+      background-color: var(--terracota);
+      color: var(--blanco);
+      box-shadow: 0 4px 14px rgba(197, 87, 52, 0.3);
+    }
+
+    .btn-terracota:hover:not(:disabled) {
+      background-color: var(--terracota-hover);
+      box-shadow: 0 6px 18px rgba(197, 87, 52, 0.4);
+    }
+
+    .btn-oliva {
+      background-color: var(--oliva);
+      color: var(--blanco);
+      box-shadow: 0 4px 14px rgba(89, 107, 68, 0.3);
+    }
+
+    .btn-oliva:hover:not(:disabled) {
+      background-color: var(--oliva-hover);
+      box-shadow: 0 6px 18px rgba(89, 107, 68, 0.4);
+    }
+
+    .btn-borde {
+      background-color: var(--blanco);
+      color: var(--texto-oscuro);
+      border: 1.5px solid var(--borde-suave);
+    }
+
+    .btn-borde:hover {
+      background-color: var(--fondo-suave);
+      border-color: var(--texto-secundario);
+    }
+
+    .acciones-confirmacion {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 600px) {
+      .acciones-confirmacion {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none !important;
+    }
+
+    .btn-completo {
+      width: 100%;
+    }
+
+    /* ==========================================================================
+       BARRA INFERIOR FIJA CON EL TOTAL ACTUALIZADO
+       ========================================================================== */
+    .barra-pedido-fija {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--blanco);
+      border-top: 1px solid var(--borde-suave);
+      box-shadow: var(--sombra-barra);
+      padding: 12px 20px;
+      z-index: 40;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .barra-pedido-fija.oculta {
+      transform: translateY(110%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .barra-pedido-contenido {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .info-total-barra {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .etiqueta-total-barra {
+      font-size: 0.78rem;
+      color: var(--texto-suave);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .monto-total-barra {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: var(--terracota);
+      line-height: 1.1;
+    }
+
+    .resumen-platos-barra {
+      font-size: 0.82rem;
+      color: var(--texto-secundario);
+      display: none;
+    }
+
+    @media (min-width: 550px) {
+      .resumen-platos-barra {
+        display: block;
+      }
+    }
+
+    .btn-accion-barra {
+      min-width: 170px;
+      padding: 12px 24px;
+      min-height: 48px;
+    }
+
+    /* Notificación flotante (toast) */
+    .toast-notificacion {
+      position: fixed;
+      top: 75px;
+      right: 20px;
+      background-color: var(--texto-oscuro);
+      color: var(--blanco);
+      padding: 12px 20px;
+      border-radius: var(--radio-pill);
+      font-size: 0.88rem;
+      font-weight: 700;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      z-index: 1100;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: var(--transicion);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast-notificacion.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       PIE DE PÁGINA
+       ========================================================================== */
+    .footer-manta {
+      background-color: var(--fondo-suave);
+      border-top: 1px solid var(--borde-suave);
+      padding: 30px 20px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .footer-contenido {
+      max-width: 960px;
+      margin: 0 auto;
+      font-size: 0.85rem;
+      color: var(--texto-suave);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-marca {
+      font-weight: 900;
+      color: var(--terracota);
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       CABECERA
+       ========================================================================== -->
+  <header class="header-manta">
+    <div class="header-contenedor">
+      <div class="logo-marca" onclick="irA('inicio')">
+        <div class="logo-icono" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+        </div>
+        <div class="logo-texto">
+          <span class="logo-titulo">MANTA</span>
+          <span class="logo-subtitulo">Almuerzos caseros</span>
+        </div>
+      </div>
+
+      <div class="header-acciones">
+        <div class="badge-estado">
+          <span class="punto-activo"></span>
+          <span>Envíos: 12:00 PM a 3:30 PM</span>
+        </div>
+
+        <!-- Acceso exclusivo para el dueño para ver el registro de envíos -->
+        <button type="button" class="btn-acceso-dueno" onclick="abrirModalDueno()" title="Solo para el dueño / cocina">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Acceso Dueño
+        </button>
+      </div>
+    </div>
+
+    <!-- Indicador de pasos visual -->
+    <nav class="pasos-indicador" id="barra-pasos" aria-label="Progreso del pedido">
+      <div class="paso-item activo" id="indicador-paso-menu">
+        <span class="paso-numero">1</span>
+        <span>Entrada & Fondo</span>
+      </div>
+      <div class="paso-separador"></div>
+      <div class="paso-item" id="indicador-paso-complementos">
+        <span class="paso-numero">2</span>
+        <span>Adicionales</span>
+      </div>
+      <div class="paso-separador"></div>
+      <div class="paso-item" id="indicador-paso-pago">
+        <span class="paso-numero">3</span>
+        <span>Envío & Pago</span>
+      </div>
+      <div class="paso-separador"></div>
+      <div class="paso-item" id="indicador-paso-confirmacion">
+        <span class="paso-numero">4</span>
+        <span>Comanda</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL
+       ========================================================================== -->
+  <main>
+
+    <!-- ------------------------------------------------------------------------
+         PANTALLA 1: INICIO
+         ------------------------------------------------------------------------ -->
+    <section id="pantalla-inicio" class="pantalla activa">
+      <div class="hero-inicio">
+        <div class="hero-insignia">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          Almuerzos caseros diarios
+        </div>
+        <h1 class="hero-titulo">El almuerzo de hoy,<br><span>como en casa.</span></h1>
+        <p class="hero-descripcion">
+          Arma tu menú del día en segundos: elige tu entrada favorita y tu plato de fondo con sazón criolla tradicional. Controlamos el stock en tiempo real para que tu porción esté garantizada.
+        </p>
+
+        <div class="banner-horario-almuerzo">
+          <div class="icono-reloj">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div>
+            <strong style="display: block; font-size: 0.95rem; color: var(--texto-oscuro);">Horario de envíos programados:</strong>
+            <span style="font-size: 0.85rem; color: var(--texto-secundario);">De 12:00 PM a 3:30 PM • Salidas de delivery cada 30 minutos</span>
+          </div>
+        </div>
+
+        <button class="btn btn-terracota" style="font-size: 1.15rem; padding: 16px 36px;" onclick="irA('menu')">
+          Armar mi almuerzo de hoy
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <div class="hero-tarjetas-cualidades">
+          <div class="tarjeta-cualidad">
+            <h4>Entradas & Fondos Fijos</h4>
+            <p>5 ricas entradas y 6 fondos clásicos preparados fresco hoy.</p>
+          </div>
+          <div class="tarjeta-cualidad">
+            <h4>Stock del Día en Vivo</h4>
+            <p>Se descuenta automáticamente con cada pedido confirmado.</p>
+          </div>
+          <div class="tarjeta-cualidad">
+            <h4>Envíos Puntuales</h4>
+            <p>Eliges tu turno exacto de salida cada 30 minutos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         PANTALLA 2: MENÚ DEL DÍA (2 COLUMNAS: ENTRADA Y FONDO)
+         ------------------------------------------------------------------------ -->
+    <section id="pantalla-menu" class="pantalla">
+      <button class="btn-volver" onclick="irA('inicio')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Inicio
+      </button>
+
+      <div class="seccion-encabezado">
+        <span class="seccion-etiqueta">Menú del día</span>
+        <h2 class="seccion-titulo">Hoy en la mesa</h2>
+        <p class="seccion-subtitulo">Elige 1 Entrada y 1 Plato de Fondo. El stock se actualiza en tiempo real.</p>
+      </div>
+
+      <!-- Banner de precio de menú completo -->
+      <div class="banner-precio-menu">
+        <div class="banner-precio-info">
+          <h4>Menú completo del día (Entrada + Plato de fondo)</h4>
+          <p>Elige una opción de cada columna para continuar a los adicionales.</p>
+        </div>
+        <div class="badge-precio-destacado" id="precio-menu-completo">S/ 16.00</div>
+      </div>
+
+      <!-- Contenedor en 2 Columnas: Entradas y Fondos -->
+      <div class="menu-dos-columnas-grid">
+        
+        <!-- COLUMNA 1: ENTRADAS FIJAS -->
+        <div class="columna-seleccion">
+          <div class="columna-cabecera">
+            <div class="columna-titulo-grupo">
+              <span class="numero-columna-badge">1</span>
+              <h3 class="columna-titulo">Elige tu Entrada</h3>
+            </div>
+            <span class="columna-estado-tag" id="tag-estado-entrada">Por elegir</span>
+          </div>
+
+          <div class="lista-platos-columna" id="lista-entradas">
+            <!-- Renderizado dinámico desde JS con Ensalada, Huancaína, Tequeños, Salchipapa, Plátano frito -->
+          </div>
+        </div>
+
+        <!-- COLUMNA 2: PLATOS DE FONDO FIJOS -->
+        <div class="columna-seleccion">
+          <div class="columna-cabecera">
+            <div class="columna-titulo-grupo">
+              <span class="numero-columna-badge">2</span>
+              <h3 class="columna-titulo">Elige tu Plato de Fondo</h3>
+            </div>
+            <span class="columna-estado-tag" id="tag-estado-fondo">Por elegir</span>
+          </div>
+
+          <div class="lista-platos-columna" id="lista-fondos">
+            <!-- Renderizado dinámico desde JS con Arroz a la cubana, Pollo a la plancha, Arroz con pollo, Lentejas, Pallares, Arverjitas -->
+          </div>
+
+          <!-- Sub-selector especial que aparece al elegir Pallares o Arverjitas -->
+          <div id="caja-subopciones-proteina" class="caja-subopciones-proteina" style="display: none;">
+            <div class="subopcion-titulo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>Elige tu proteína para tus legumbres:</span>
+            </div>
+
+            <!-- Paso A: Pechuga o Pollo Frito -->
+            <div class="subopciones-chips-grupo" id="grupo-chips-proteina">
+              <button type="button" class="chip-subopcion activo" onclick="seleccionarTipoProteina('Pechuga')">Pechuga</button>
+              <button type="button" class="chip-subopcion" onclick="seleccionarTipoProteina('Pollo Frito')">Pollo Frito</button>
+            </div>
+
+            <!-- Paso B: Presa específica si elige Pollo Frito -->
+            <div id="subgrupo-presas" style="display: none;">
+              <div style="font-size: 0.82rem; font-weight: 700; color: var(--texto-secundario); margin-bottom: 6px;">
+                ¿Qué presa prefieres?:
+              </div>
+              <div class="subopciones-chips-grupo" id="grupo-chips-presa">
+                <button type="button" class="chip-subopcion activo" onclick="seleccionarPresa('Pecho')">Pecho</button>
+                <button type="button" class="chip-subopcion" onclick="seleccionarPresa('Pierna')">Pierna</button>
+                <button type="button" class="chip-subopcion" onclick="seleccionarPresa('Entrepierna')">Entrepierna</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         PANTALLA 3: ADICIONALES Y COMPLEMENTOS
+         ------------------------------------------------------------------------ -->
+    <section id="pantalla-complementos" class="pantalla">
+      <button class="btn-volver" onclick="irA('menu')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Cambiar menú
+      </button>
+
+      <div class="seccion-encabezado">
+        <span class="seccion-etiqueta">Adicionales & Extras</span>
+        <h2 class="seccion-titulo">Algo más para acompañar</h2>
+        <p class="seccion-subtitulo">Agrega porciones extras, refresco del día o tu postre favorito.</p>
+      </div>
+
+      <!-- Bloque 1: Adicionales solicitados -->
+      <div class="bloque-categoria">
+        <h3 class="categoria-titulo">
+          <div class="categoria-icono">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+          </div>
+          Adicionales de la cocina
+        </h3>
+        <div class="grilla-complementos" id="contenedor-adicionales"></div>
+      </div>
+
+      <!-- Bloque 2: Bebidas y Refresco del Día -->
+      <div class="bloque-categoria">
+        <h3 class="categoria-titulo">
+          <div class="categoria-icono">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            </svg>
+          </div>
+          Bebidas
+        </h3>
+        <div class="grilla-complementos" id="contenedor-bebidas"></div>
+      </div>
+
+      <!-- Bloque 3: Postres caseros -->
+      <div class="bloque-categoria">
+        <h3 class="categoria-titulo">
+          <div class="categoria-icono">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+              <line x1="9" y1="9" x2="9.01" y2="9"></line>
+              <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+          </div>
+          Postres
+        </h3>
+        <div class="grilla-complementos" id="contenedor-postres"></div>
+      </div>
+
+      <!-- Resumen visual en complementos -->
+      <div class="caja-resumen-lateral">
+        <div class="caja-resumen-titulo">
+          <span>Resumen de tu pedido</span>
+          <span id="resumen-rapido-items" style="font-size: 0.85rem; color: var(--terracota); font-weight: 800;">1 Menú</span>
+        </div>
+        <ul class="lista-resumen-rapido" id="lista-resumen-rapido"></ul>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         PANTALLA 4: MÉTODO DE PAGO, DIRECCIÓN Y HORARIO DE ENVÍO
+         ------------------------------------------------------------------------ -->
+    <section id="pantalla-pago" class="pantalla">
+      <button class="btn-volver" onclick="irA('complementos')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Revisar adicionales
+      </button>
+
+      <div class="seccion-encabezado">
+        <span class="seccion-etiqueta">Paso final</span>
+        <h2 class="seccion-titulo">Casi listo para servir</h2>
+        <p class="seccion-subtitulo">Indícanos tu dirección y la hora de envío programada para tu almuerzo.</p>
+      </div>
+
+      <div class="layout-formulario">
+        <!-- Formulario -->
+        <div class="tarjeta-formulario">
+          <form id="formulario-pedido" onsubmit="event.preventDefault(); confirmarPedido();">
+
+            <!-- Tipo de Entrega: Delivery o Recojo -->
+            <div class="grupo-campo">
+              <label class="etiqueta-campo">Modalidad de entrega <span>*</span></label>
+              <div class="tabs-tipo-entrega">
+                <button type="button" class="btn-tab-entrega activo" id="tab-delivery" onclick="cambiarTipoEntrega('delivery')">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="3" width="15" height="13"></rect>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                  </svg>
+                  Envío a Domicilio / Oficina
+                </button>
+                <button type="button" class="btn-tab-entrega" id="tab-recojo" onclick="cambiarTipoEntrega('recojo')">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                  Recojo en local
+                </button>
+              </div>
+            </div>
+
+            <!-- Datos de contacto -->
+            <div class="grupo-campo">
+              <label for="cliente-nombre" class="etiqueta-campo">Tu nombre completo <span>*</span></label>
+              <input type="text" id="cliente-nombre" class="input-texto" placeholder="Ej. Carlos Mendoza" required autocomplete="name">
+            </div>
+
+            <div class="grupo-campo">
+              <label for="cliente-telefono" class="etiqueta-campo">Teléfono / WhatsApp de contacto <span>*</span></label>
+              <input type="tel" id="cliente-telefono" class="input-texto" placeholder="Ej. 987 654 321" required autocomplete="tel">
+            </div>
+
+            <!-- Dirección de Envío -->
+            <div class="grupo-campo" id="bloque-direccion-envio">
+              <label for="cliente-direccion" class="etiqueta-campo">Dirección exacta hacia donde se enviará <span>*</span></label>
+              <input type="text" id="cliente-direccion" class="input-texto" placeholder="Ej. Av. Larco 743, Dpto. 402 - Miraflores" required>
+              
+              <label for="cliente-referencia" class="etiqueta-campo" style="margin-top: 8px;">Referencia de entrega (opcional)</label>
+              <input type="text" id="cliente-referencia" class="input-texto" placeholder="Ej. Frente al parque, rejas blancas, timbre 4B">
+            </div>
+
+            <!-- Horarios de Envíos: 12:00 PM a 3:30 PM (cada 30 min) -->
+            <div class="grupo-campo">
+              <label class="etiqueta-campo">Horario de salida del envío <span>*</span></label>
+              <p style="font-size: 0.8rem; color: var(--texto-suave); margin-bottom: 6px;">
+                Despachamos pedidos cada 30 minutos entre 12:00 PM y 3:30 PM:
+              </p>
+              <div class="chips-horas" id="chips-horas-envio">
+                <button type="button" class="chip-hora activo" onclick="seleccionarHoraEnvio('12:00 PM')">12:00 PM</button>
+                <button type="button" class="chip-hora" onclick="seleccionarHoraEnvio('12:30 PM')">12:30 PM</button>
+                <button type="button" class="chip-hora" onclick="seleccionarHoraEnvio('1:00 PM')">1:00 PM</button>
+                <button type="button" class="chip-hora" onclick="seleccionarHoraEnvio('1:30 PM')">1:30 PM</button>
+                <button type="button" class="chip-hora" onclick="seleccionarHoraEnvio('2:00 PM')">2:00 PM</button>
+                <button type="button" class="chip-hora" onclick="seleccionarHoraEnvio('2:30 PM')">2:30 PM</button>
+                <button type="button" class="chip-hora" onclick="seleccionarHoraEnvio('3:00 PM')">3:00 PM</button>
+                <button type="button" class="chip-hora" onclick="seleccionarHoraEnvio('3:30 PM')">3:30 PM</button>
+              </div>
+              <input type="hidden" id="hora-envio-seleccionada" value="12:00 PM">
+            </div>
+
+            <!-- Método de Pago: SOLO Efectivo y Billeteras Digitales (Yape / Plin) -->
+            <div class="grupo-campo">
+              <label class="etiqueta-campo">Método de pago <span>*</span></label>
+              <div class="opciones-pago">
+                <!-- Opción 1: Billeteras Digitales -->
+                <div class="opcion-pago-card seleccionado" id="opcion-yape-plin" onclick="seleccionarMetodoPago('billetera')">
+                  <div class="radio-personalizado"></div>
+                  <div class="info-opcion-pago">
+                    <div class="titulo-pago">Billeteras digitales</div>
+                    <div class="desc-pago">Pagas al recibir usando tu app móvil.</div>
+                    <div class="badge-pago-tags">
+                      <span class="tag-yape">YAPE</span>
+                      <span class="tag-plin">PLIN</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Opción 2: Efectivo -->
+                <div class="opcion-pago-card" id="opcion-efectivo" onclick="seleccionarMetodoPago('efectivo')">
+                  <div class="radio-personalizado"></div>
+                  <div class="info-opcion-pago">
+                    <div class="titulo-pago">Efectivo</div>
+                    <div class="desc-pago">Pagas en mano al motorizado o en el local al recibir.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Campo opcional de vuelto en efectivo -->
+              <div id="campo-vuelto-efectivo" class="campo-vuelto" style="display: none;">
+                <label for="monto-efectivo">¿Con qué billete pagarás? (Para que el repartidor lleve tu vuelto exacto):</label>
+                <input type="text" id="monto-efectivo" class="input-texto" placeholder="Ej. Pago con S/ 50.00">
+              </div>
+            </div>
+
+            <!-- Nota para la cocina -->
+            <div class="grupo-campo">
+              <label for="cliente-notas" class="etiqueta-campo">Indicaciones especiales (opcional)</label>
+              <input type="text" id="cliente-notas" class="input-texto" placeholder="Ej. Ají aparte, sin salchicha, etc.">
+            </div>
+
+            <!-- Error de validación -->
+            <div id="alerta-error-formulario" class="mensaje-error" role="alert">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span id="texto-error-formulario">Por favor completa todos los campos requeridos.</span>
+            </div>
+
+            <button type="submit" class="btn btn-terracota btn-completo" style="margin-top: 14px;">
+              Confirmar pedido y programar envío
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Resumen Lateral -->
+        <div>
+          <div class="tarjeta-resumen-pedido">
+            <h3 class="titulo-resumen">Tu pedido en MANTA</h3>
+            <div id="resumen-detalle-items"></div>
+            <div class="linea-total-resumen">
+              <span>Total a pagar</span>
+              <span class="total-monto" id="total-monto-resumen">S/ 16.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------------
+         PANTALLA 5: CONFIRMACIÓN Y REGISTRO
+         ------------------------------------------------------------------------ -->
+    <section id="pantalla-confirmacion" class="pantalla">
+      <div class="confirmacion-contenedor">
+        <div class="icono-exito" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+
+        <h2 class="titulo-confirmacion">¡Tu pedido está registrado!</h2>
+        <p class="mensaje-confirmacion">
+          Tu comanda ha sido guardada en el registro de despachos de MANTA y el stock correspondiente ha sido descontado.
+        </p>
+
+        <!-- Aviso de registro seguro -->
+        <div class="caja-aviso-registro-dueno">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <div>
+            <strong>Registro de envío creado con éxito.</strong> El dueño de MANTA ya tiene esta orden en su panel privado de control para el despacho correspondiente.
+          </div>
+        </div>
+
+        <!-- Ticket / Comanda Detallada -->
+        <div class="ticket-pedido" id="ticket-confirmacion">
+          <div class="ticket-cabecera">
+            <div class="codigo-pedido">
+              Comanda de Almuerzo
+              <strong id="ticket-codigo">#M-101</strong>
+            </div>
+            <div class="ticket-badge-estado" id="ticket-estado">En cola de cocina</div>
+          </div>
+
+          <div class="datos-cliente-ticket">
+            <div class="dato-cliente-item">
+              <strong>Cliente</strong>
+              <span id="ticket-nombre">Carlos Mendoza</span>
+            </div>
+            <div class="dato-cliente-item">
+              <strong>Salida de envío</strong>
+              <span id="ticket-hora">1:00 PM</span>
+            </div>
+            <div class="dato-cliente-item">
+              <strong>Teléfono</strong>
+              <span id="ticket-telefono">987 654 321</span>
+            </div>
+            <div class="dato-cliente-item">
+              <strong>Método de pago</strong>
+              <span id="ticket-pago">Billeteras (Yape/Plin)</span>
+            </div>
+            <div class="dato-cliente-item dato-cliente-full">
+              <strong>Dirección de entrega</strong>
+              <span id="ticket-direccion">Av. Larco 743, Dpto 402</span>
+            </div>
+          </div>
+
+          <div class="subtitulo-resumen" style="font-size: 0.8rem; text-transform: uppercase; font-weight: 800; color: var(--texto-suave); margin-bottom: 8px;">
+            Detalle del menú y adicionales
+          </div>
+          <ul class="ticket-articulos" id="ticket-articulos-lista"></ul>
+
+          <div class="ticket-total">
+            <span>Total a cobrar:</span>
+            <span class="monto" id="ticket-total-monto">S/ 0.00</span>
+          </div>
+
+          <p class="ticket-nota" id="ticket-nota-cocina">
+            "Saldrá en el turno programado de despacho."
+          </p>
+        </div>
+
+        <!-- Acciones en Confirmación -->
+        <div class="acciones-confirmacion">
+          <!-- Botón directo para enviar la comanda por WhatsApp al dueño -->
+          <button class="btn btn-oliva" onclick="enviarPedidoPorWhatsApp()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            Enviar comanda por WhatsApp
+          </button>
+
+          <button class="btn btn-borde" onclick="copiarResumenComanda()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copiar comanda
+          </button>
+
+          <button class="btn btn-terracota" onclick="hacerNuevoPedido()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 2v6h6"></path>
+              <path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path>
+              <path d="M21 22v-6h-6"></path>
+              <path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path>
+            </svg>
+            Hacer otro pedido
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       BARRA INFERIOR FLOTANTE
+       ========================================================================== -->
+  <aside class="barra-pedido-fija" id="barra-pedido-fija" aria-label="Resumen flotante">
+    <div class="barra-pedido-contenido">
+      <div class="info-total-barra">
+        <span class="etiqueta-total-barra" id="etiqueta-barra-pedido">Total del pedido</span>
+        <span class="monto-total-barra" id="monto-total-barra">S/ 16.00</span>
+        <span class="resumen-platos-barra" id="resumen-platos-barra">Selecciona tu Entrada y Fondo</span>
+      </div>
+
+      <button class="btn btn-terracota btn-accion-barra" id="btn-accion-barra" onclick="avanzarPasoSiguiente()">
+        Continuar
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==========================================================================
+       MODAL: PANEL PRIVADO DEL DUEÑO (REGISTRO EXCLUSIVO DE ENVÍOS Y STOCK)
+       ========================================================================== -->
+  <div class="modal-dueno-backdrop" id="modal-dueno-backdrop" onclick="cerrarModalDuenoSiFondo(event)">
+    <div class="modal-dueno-contenido">
+      
+      <!-- Paso 1: Autenticación por PIN -->
+      <div id="bloque-auth-dueno">
+        <div class="modal-cabecera">
+          <div>
+            <h3 style="font-size: 1.35rem; font-weight: 900; color: var(--terracota);">Acceso Seguro • Dueño de MANTA</h3>
+            <p style="font-size: 0.88rem; color: var(--texto-secundario);">Ingresa tu PIN de seguridad para ver el registro confidencial de pedidos.</p>
+          </div>
+          <button type="button" class="btn-cerrar-modal" onclick="cerrarModalDueno()">✕</button>
+        </div>
+
+        <div style="max-width: 320px; margin: 20px auto; text-align: center;">
+          <label for="pin-dueno-input" class="etiqueta-campo" style="margin-bottom: 8px;">PIN de Administrador (Predeterminado: 1234):</label>
+          <input type="password" id="pin-dueno-input" class="input-texto" maxlength="8" placeholder="••••" style="text-align: center; font-size: 1.5rem; letter-spacing: 6px;">
+          <div id="error-pin-dueno" style="color: var(--alerta-texto); font-size: 0.85rem; font-weight: 700; margin-top: 8px; display: none;">
+            PIN incorrecto. Inténtalo nuevamente.
+          </div>
+          <button type="button" class="btn btn-terracota btn-completo" style="margin-top: 14px;" onclick="validarPinDueno()">
+            Entrar al Panel
+          </button>
+        </div>
+      </div>
+
+      <!-- Paso 2: Panel Completo de Control (Solo Dueño) -->
+      <div id="bloque-panel-dueno" style="display: none;">
+        <div class="modal-cabecera">
+          <div>
+            <span class="seccion-etiqueta" style="color: var(--oliva);">Panel Confidencial de Control</span>
+            <h3 style="font-size: 1.45rem; font-weight: 900; color: var(--texto-oscuro);">Registro Diario de Envíos & Stock</h3>
+          </div>
+          <button type="button" class="btn-cerrar-modal" onclick="cerrarModalDueno()">✕</button>
+        </div>
+
+        <!-- Tarjetas de métricas -->
+        <div class="dueno-stats-grid">
+          <div class="dueno-stat-card">
+            <span>Total Recaudado Hoy</span>
+            <strong id="dueno-stat-ventas">S/ 0.00</strong>
+          </div>
+          <div class="dueno-stat-card">
+            <span>Pedidos Registrados</span>
+            <strong id="dueno-stat-pedidos">0</strong>
+          </div>
+          <div class="dueno-stat-card">
+            <span>Envíos Pendientes</span>
+            <strong id="dueno-stat-pendientes" style="color: var(--oliva);">0</strong>
+          </div>
+        </div>
+
+        <!-- Configuración de WhatsApp del Dueño -->
+        <div style="background-color: var(--fondo-suave); border: 1px solid var(--borde-suave); border-radius: var(--radio-md); padding: 14px 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;">
+          <div>
+            <strong style="font-size: 0.9rem; color: var(--texto-oscuro);">Tu número de WhatsApp para recibir pedidos:</strong>
+            <p style="font-size: 0.8rem; color: var(--texto-suave);">Los clientes te enviarán su comanda a este número.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input type="tel" id="input-whatsapp-dueno" class="input-texto" style="width: 170px; padding: 8px 12px; font-size: 0.9rem;" placeholder="Ej. 51987654321">
+            <button type="button" class="btn btn-terracota" style="padding: 8px 16px; min-height: 40px; font-size: 0.85rem;" onclick="guardarNumeroWhatsAppDueno()">
+              Guardar
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtro por Turno de Envío -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--texto-oscuro);">Envíos del Día</h4>
+          <div style="display: flex; gap: 8px;">
+            <select id="filtro-turno-envio" class="input-texto" style="padding: 6px 12px; font-size: 0.85rem; width: auto;" onchange="filtrarTablaEnvios()">
+              <option value="todos">Todos los turnos</option>
+              <option value="12:00 PM">Turno 12:00 PM</option>
+              <option value="12:30 PM">Turno 12:30 PM</option>
+              <option value="1:00 PM">Turno 1:00 PM</option>
+              <option value="1:30 PM">Turno 1:30 PM</option>
+              <option value="2:00 PM">Turno 2:00 PM</option>
+              <option value="2:30 PM">Turno 2:30 PM</option>
+              <option value="3:00 PM">Turno 3:00 PM</option>
+              <option value="3:30 PM">Turno 3:30 PM</option>
+            </select>
+            <button type="button" class="btn btn-borde" style="padding: 6px 14px; min-height: 38px; font-size: 0.85rem;" onclick="exportarRegistroCSV()">
+              Exportar CSV / Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabla con el registro completo de envíos -->
+        <div class="tabla-envios-contenedor">
+          <table class="tabla-envios">
+            <thead>
+              <tr>
+                <th>Comanda / Salida</th>
+                <th>Cliente & Dirección</th>
+                <th>Menú & Adicionales</th>
+                <th>Total / Pago</th>
+                <th>Estado & Acción</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla-envios">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Administrador de Stock Diario -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--fondo-suave);">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <div>
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--texto-oscuro);">Control de Stock Diario</h4>
+              <p style="font-size: 0.8rem; color: var(--texto-suave);">Puedes ajustar porciones manualmente o recargar el stock de mañana con un clic.</p>
+            </div>
+            <button type="button" class="btn btn-oliva" style="padding: 8px 16px; min-height: 40px; font-size: 0.85rem;" onclick="reiniciarStockDiarioCompleto()">
+              Reiniciar stock de hoy
+            </button>
+          </div>
+
+          <div class="stock-admin-grid" id="contenedor-admin-stock">
+            <!-- Renderizado dinámico de stock -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación Flotante (Toast) -->
+  <div id="toast-notificacion" class="toast-notificacion" role="status" aria-live="polite">
+    <span id="toast-mensaje">Elemento actualizado</span>
+  </div>
+
+  <!-- ==========================================================================
+       PIE DE PÁGINA
+       ========================================================================== */
+  <footer class="footer-manta">
+    <div class="footer-contenido">
+      <div class="footer-marca">MANTA</div>
+      <p>Almuerzos caseros diarios • Envíos de 12:00 PM a 3:30 PM (salidas cada 30 min)</p>
+      <button type="button" class="btn-acceso-dueno" style="margin-top: 4px;" onclick="abrirModalDueno()">
+        🔒 Acceso exclusivo para el dueño
+      </button>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       JAVASCRIPT: LÓGICA DE NEGOCIO, STOCK Y REGISTRO DE ENVÍOS
+       ========================================================================== -->
+  <script>
+    /**
+     * CONFIGURACIÓN FIJA DE PLATOS Y ADICIONALES
+     */
+    const CONFIG_MANTA = {
+      precioMenuBase: 16.00, // Precio fijo del menú (Entrada + Plato de Fondo)
+      
+      // Entradas fijas requeridas
+      entradas: [
+        { id: 'ent-ensalada', nombre: 'Ensalada fresca', desc: 'Lechuga, tomate, pepino y vinagreta de la casa' },
+        { id: 'ent-huancaina', nombre: 'Papa a la huancaína', desc: 'Papas con crema huancaína tradicional, huevo y aceituna' },
+        { id: 'ent-tequenos', nombre: 'Tequeños', desc: '5 crocantes tequeños rellenos con guacamole casero' },
+        { id: 'ent-salchipapa', nombre: 'Salchipapa', desc: 'Papas fritas con salchicha doradita' },
+        { id: 'ent-platano', nombre: 'Plátano frito', desc: 'Rodajas de plátano acarameladas y doradas' }
+      ],
+
+      // Platos de fondo fijos siempre
+      fondos: [
+        { id: 'fon-cubana', nombre: 'Arroz a la cubana', desc: 'Con arroz graneado, plátano dulce y 2 huevos fritos' },
+        { id: 'fon-plancha', nombre: 'Pollo a la plancha', desc: 'Filete jugoso con papas doradas o ensalada y arroz' },
+        { id: 'fon-arroz-pollo', nombre: 'Arroz con pollo', desc: 'Clásico criollo con presas doradas y sarsa criolla' },
+        { id: 'fon-lentejas', nombre: 'Lentejas', desc: 'Guiso casero de lentejitas con arroz y sarsa' },
+        { id: 'fon-pallares', nombre: 'Pallares criollos', desc: 'Cremosos pallares con acompañamiento de presa a elección', requiereProteina: true },
+        { id: 'fon-arverjitas', nombre: 'Arverjitas partidas', desc: 'Guiso verde tradicional con acompañamiento a elección', requiereProteina: true }
+      ],
+
+      // Adicionales exactos pedidos por el usuario con sus precios
+      adicionales: [
+        { id: 'adi-doble-presa', nombre: 'Doble presa', desc: 'Presa extra dorada y jugosa', precio: 8.00 },
+        { id: 'adi-papas-fritas', nombre: 'Porción de papas fritas', desc: 'Papas crocantes recién fritas', precio: 6.00 },
+        { id: 'adi-arroz', nombre: 'Porción de arroz', desc: 'Arroz blanco bien graneadito', precio: 4.00 },
+        { id: 'adi-papa-sancochada', nombre: 'Porción de papa sancochada', desc: 'Papas suaves y calientitas', precio: 2.50 },
+        { id: 'adi-entrada-extra', nombre: 'Entrada adicional', desc: 'Una porción extra de entrada', precio: 5.00 },
+        { id: 'adi-refresco-dia', nombre: 'Refresco del día', desc: 'Vaso de refresco casero de fruta', precio: 1.00 },
+        { id: 'adi-a-lo-pobre', nombre: 'A lo pobre', desc: 'Plátano frito dulce + huevo montado', precio: 4.00 },
+        { id: 'adi-chorizo', nombre: 'Chorizo', desc: 'Chorizo parrillero frito a la plancha', precio: 4.00 },
+        { id: 'adi-huevo-frito', nombre: 'Huevo frito', desc: 'Huevo montado con yema tierna', precio: 2.00 }
+      ],
+
+      // Bebidas complementarias
+      bebidas: [
+        { id: 'beb-chicha', nombre: 'Chicha morada casera (500 ml)', desc: 'Maíz morado con piña, manzana y canela', precio: 4.00 },
+        { id: 'beb-maracuya', nombre: 'Jugo de maracuyá helado (500 ml)', desc: 'Natural y refrescante', precio: 4.00 },
+        { id: 'beb-limonada', nombre: 'Limonada con hierbabuena (500 ml)', desc: 'Recién exprimida', precio: 3.50 },
+        { id: 'beb-agua', nombre: 'Agua mineral San Mateo (600 ml)', desc: 'Sin gas bien helada', precio: 2.50 }
+      ],
+
+      // Postres caseros
+      postres: [
+        { id: 'pos-crema', nombre: 'Crema volteada de la abuela', desc: 'Suave y acaramelada', precio: 5.50 },
+        { id: 'pos-arroz-leche', nombre: 'Arroz con leche limeño', desc: 'Cremoso con canela molida', precio: 4.50 },
+        { id: 'pos-mazamorra', nombre: 'Mazamorra morada con guindones', desc: 'Receta tradicional', precio: 4.50 },
+        { id: 'pos-torta', nombre: 'Torta de chocolate húmeda', desc: 'Con fudge casero de olla', precio: 6.00 }
+      ]
+    };
+
+    /**
+     * STOCK DIARIO POR DEFECTO
+     */
+    const STOCK_INICIAL_DEFECTO = {
+      // Entradas
+      'ent-ensalada': 25,
+      'ent-huancaina': 30,
+      'ent-tequenos': 20,
+      'ent-salchipapa': 20,
+      'ent-platano': 20,
+      // Fondos
+      'fon-cubana': 25,
+      'fon-plancha': 30,
+      'fon-arroz-pollo': 35,
+      'fon-lentejas': 25,
+      'fon-pallares': 20,
+      'fon-arverjitas': 20,
+      // Presas de pollo (para pallares y arverjitas)
+      'presa-pecho': 18,
+      'presa-pierna': 18,
+      'presa-entrepierna': 18,
+      'prot-pechuga': 25
+    };
+
+    /**
+     * GESTIÓN DE STOCK PERSISTENTE EN LOCALSTORAGE
+     */
+    function obtenerStockActual() {
+      try {
+        const guardado = localStorage.getItem('manta_stock_diario');
+        if (guardado) return JSON.parse(guardado);
+      } catch (e) {}
+      return { ...STOCK_INICIAL_DEFECTO };
+    }
+
+    function guardarStock(stock) {
+      try {
+        localStorage.setItem('manta_stock_diario', JSON.stringify(stock));
+      } catch (e) {}
+    }
+
+    function descontarStockPedido(entradaId, fondoId, detalleProteina) {
+      const stock = obtenerStockActual();
+      if (stock[entradaId] && stock[entradaId] > 0) stock[entradaId]--;
+      if (stock[fondoId] && stock[fondoId] > 0) stock[fondoId]--;
+
+      if (detalleProteina && detalleProteina.tipo === 'Pollo Frito') {
+        const presaKey = `presa-${detalleProteina.presa.toLowerCase()}`;
+        if (stock[presaKey] && stock[presaKey] > 0) stock[presaKey]--;
+      } else if (detalleProteina && detalleProteina.tipo === 'Pechuga') {
+        if (stock['prot-pechuga'] && stock['prot-pechuga'] > 0) stock['prot-pechuga']--;
+      }
+
+      guardarStock(stock);
+    }
+
+    /**
+     * GESTIÓN DEL REGISTRO DE PEDIDOS (SOLO PARA EL DUEÑO)
+     */
+    function obtenerRegistroPedidos() {
+      try {
+        const guardado = localStorage.getItem('manta_registro_envios');
+        if (guardado) return JSON.parse(guardado);
+      } catch (e) {}
+      return [];
+    }
+
+    function guardarRegistroPedidos(pedidos) {
+      try {
+        localStorage.setItem('manta_registro_envios', JSON.stringify(pedidos));
+      } catch (e) {}
+    }
+
+    function agregarPedidoAlRegistro(nuevoPedido) {
+      const pedidos = obtenerRegistroPedidos();
+      pedidos.unshift(nuevoPedido); // Al inicio
+      guardarRegistroPedidos(pedidos);
+    }
+
+    /**
+     * ESTADO GLOBAL DE LA APLICACIÓN
+     */
+    const estadoApp = {
+      pantallaActual: 'inicio',
+      entradaSeleccionadaId: 'ent-huancaina', // Pre-seleccionada por defecto
+      fondoSeleccionadoId: 'fon-arroz-pollo',  // Pre-seleccionado por defecto
+      subProteinaLegumbres: {
+        tipo: 'Pechuga',                      // 'Pechuga' o 'Pollo Frito'
+        presa: 'Pecho'                        // 'Pecho', 'Pierna' o 'Entrepierna'
+      },
+      cantidadesComplementos: {},             // { id: cantidad }
+      tipoEntrega: 'delivery',                // 'delivery' o 'recojo'
+      datosCliente: {
+        nombre: '',
+        telefono: '',
+        direccion: '',
+        referencia: '',
+        horaEnvio: '12:00 PM',
+        metodoPago: 'billetera',
+        montoEfectivo: '',
+        notas: ''
+      },
+      pedidoConfirmado: null
+    };
+
+    function formatearPrecio(monto) {
+      return `S/ ${Number(monto).toFixed(2)}`;
+    }
+
+    /**
+     * OBTENER OBJETOS SELECCIONADOS
+     */
+    function obtenerEntradaSeleccionada() {
+      return CONFIG_MANTA.entradas.find(e => e.id === estadoApp.entradaSeleccionadaId) || null;
+    }
+
+    function obtenerFondoSeleccionado() {
+      return CONFIG_MANTA.fondos.find(f => f.id === estadoApp.fondoSeleccionadoId) || null;
+    }
+
+    function obtenerComplementoPorId(id) {
+      const todos = [...CONFIG_MANTA.adicionales, ...CONFIG_MANTA.bebidas, ...CONFIG_MANTA.postres];
+      return todos.find(item => item.id === id) || null;
+    }
+
+    /**
+     * CALCULAR TOTAL DEL PEDIDO
+     */
+    function calcularTotalPedido() {
+      let total = CONFIG_MANTA.precioMenuBase; // Base del menú (Entrada + Fondo)
+
+      for (const [id, cant] of Object.entries(estadoApp.cantidadesComplementos)) {
+        if (cant > 0) {
+          const comp = obtenerComplementoPorId(id);
+          if (comp) total += comp.precio * cant;
+        }
+      }
+      return total;
+    }
+
+    /**
+     * NAVEGACIÓN ENTRE PANTALLAS
+     */
+    function irA(nombrePantalla) {
+      const pantallas = ['inicio', 'menu', 'complementos', 'pago', 'confirmacion'];
+      if (!pantallas.includes(nombrePantalla)) return;
+
+      pantallas.forEach(id => {
+        const el = document.getElementById(`pantalla-${id}`);
+        if (el) el.classList.remove('activa');
+      });
+
+      const destino = document.getElementById(`pantalla-${nombrePantalla}`);
+      if (destino) destino.classList.add('activa');
+
+      estadoApp.pantallaActual = nombrePantalla;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      actualizarIndicadorPasos();
+      actualizarBarraInferior();
+      actualizarResumenesVisuales();
+    }
+
+    function actualizarIndicadorPasos() {
+      const barra = document.getElementById('barra-pasos');
+      const pasoMenu = document.getElementById('indicador-paso-menu');
+      const pasoComp = document.getElementById('indicador-paso-complementos');
+      const pasoPago = document.getElementById('indicador-paso-pago');
+      const pasoConf = document.getElementById('indicador-paso-confirmacion');
+
+      if (estadoApp.pantallaActual === 'inicio') {
+        barra.style.display = 'none';
+        return;
+      }
+      barra.style.display = 'flex';
+
+      [pasoMenu, pasoComp, pasoPago, pasoConf].forEach(el => el.className = 'paso-item');
+      const orden = ['menu', 'complementos', 'pago', 'confirmacion'];
+      const idx = orden.indexOf(estadoApp.pantallaActual);
+
+      if (idx >= 0) pasoMenu.classList.add(idx > 0 ? 'completado' : 'activo');
+      if (idx >= 1) pasoComp.classList.add(idx > 1 ? 'completado' : 'activo');
+      if (idx >= 2) pasoPago.classList.add(idx > 2 ? 'completado' : 'activo');
+      if (idx >= 3) pasoConf.classList.add('activo');
+    }
+
+    function actualizarBarraInferior() {
+      const barra = document.getElementById('barra-pedido-fija');
+      const montoEl = document.getElementById('monto-total-barra');
+      const resumenPlatosEl = document.getElementById('resumen-platos-barra');
+      const btnAccion = document.getElementById('btn-accion-barra');
+
+      if (estadoApp.pantallaActual === 'inicio' || estadoApp.pantallaActual === 'confirmacion') {
+        barra.classList.add('oculta');
+        return;
+      }
+      barra.classList.remove('oculta');
+
+      const total = calcularTotalPedido();
+      montoEl.textContent = formatearPrecio(total);
+
+      const ent = obtenerEntradaSeleccionada();
+      const fon = obtenerFondoSeleccionado();
+
+      if (ent && fon) {
+        resumenPlatosEl.textContent = `${fon.nombre} con ${ent.nombre}`;
+      } else {
+        resumenPlatosEl.textContent = 'Elige tu entrada y fondo';
+      }
+
+      if (estadoApp.pantallaActual === 'menu') {
+        btnAccion.innerHTML = `Continuar a adicionales <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+      } else if (estadoApp.pantallaActual === 'complementos') {
+        btnAccion.innerHTML = `Datos de envío <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+      } else if (estadoApp.pantallaActual === 'pago') {
+        btnAccion.innerHTML = `Confirmar pedido <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      }
+    }
+
+    function avanzarPasoSiguiente() {
+      if (estadoApp.pantallaActual === 'inicio') {
+        irA('menu');
+      } else if (estadoApp.pantallaActual === 'menu') {
+        if (!estadoApp.entradaSeleccionadaId || !estadoApp.fondoSeleccionadoId) {
+          mostrarToast('Por favor elige una Entrada y un Plato de Fondo');
+          return;
+        }
+        irA('complementos');
+      } else if (estadoApp.pantallaActual === 'complementos') {
+        irA('pago');
+      } else if (estadoApp.pantallaActual === 'pago') {
+        confirmarPedido();
+      }
+    }
+
+    /**
+     * RENDERIZAR LAS 2 COLUMNAS DEL MENÚ (ENTRADAS Y FONDOS CON STOCK)
+     */
+    function renderizarMenuDosColumnas() {
+      const stock = obtenerStockActual();
+
+      // 1. Columna Entradas
+      const listaEntradasEl = document.getElementById('lista-entradas');
+      listaEntradasEl.innerHTML = '';
+
+      CONFIG_MANTA.entradas.forEach(ent => {
+        const cantStock = stock[ent.id] !== undefined ? stock[ent.id] : 10;
+        const estaAgotado = cantStock <= 0;
+        const esSeleccionado = estadoApp.entradaSeleccionadaId === ent.id && !estaAgotado;
+
+        let badgeStockClase = 'disponible';
+        let badgeStockTexto = `${cantStock} disp.`;
+        if (estaAgotado) {
+          badgeStockClase = 'agotado-tag';
+          badgeStockTexto = '¡Agotado!';
+        } else if (cantStock <= 3) {
+          badgeStockClase = 'poco-stock';
+          badgeStockTexto = `¡Solo ${cantStock}!`;
+        }
+
+        const div = document.createElement('div');
+        div.className = `tarjeta-plato-opcion ${esSeleccionado ? 'seleccionada' : ''} ${estaAgotado ? 'agotado' : ''}`;
+        div.onclick = () => {
+          if (estaAgotado) {
+            mostrarToast('Esta entrada ya se agotó por hoy.');
+            return;
+          }
+          seleccionarEntrada(ent.id);
+        };
+
+        div.innerHTML = `
+          <div class="info-plato-opcion">
+            <div class="nombre-plato-opcion">
+              ${ent.nombre}
+              <span class="badge-stock ${badgeStockClase}">${badgeStockTexto}</span>
+            </div>
+            <div class="desc-plato-opcion">${ent.desc}</div>
+          </div>
+          <div class="check-circulo">
+            ${esSeleccionado ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : ''}
+          </div>
+        `;
+        listaEntradasEl.appendChild(div);
+      });
+
+      // 2. Columna Fondos
+      const listaFondosEl = document.getElementById('lista-fondos');
+      listaFondosEl.innerHTML = '';
+
+      CONFIG_MANTA.fondos.forEach(fon => {
+        const cantStock = stock[fon.id] !== undefined ? stock[fon.id] : 10;
+        const estaAgotado = cantStock <= 0;
+        const esSeleccionado = estadoApp.fondoSeleccionadoId === fon.id && !estaAgotado;
+
+        let badgeStockClase = 'disponible';
+        let badgeStockTexto = `${cantStock} disp.`;
+        if (estaAgotado) {
+          badgeStockClase = 'agotado-tag';
+          badgeStockTexto = '¡Agotado!';
+        } else if (cantStock <= 3) {
+          badgeStockClase = 'poco-stock';
+          badgeStockTexto = `¡Solo ${cantStock}!`;
+        }
+
+        const div = document.createElement('div');
+        div.className = `tarjeta-plato-opcion ${esSeleccionado ? 'seleccionada' : ''} ${estaAgotado ? 'agotado' : ''}`;
+        div.onclick = () => {
+          if (estaAgotado) {
+            mostrarToast('Este plato de fondo ya se agotó por hoy.');
+            return;
+          }
+          seleccionarFondo(fon.id);
+        };
+
+        div.innerHTML = `
+          <div class="info-plato-opcion">
+            <div class="nombre-plato-opcion">
+              ${fon.nombre}
+              <span class="badge-stock ${badgeStockClase}">${badgeStockTexto}</span>
+            </div>
+            <div class="desc-plato-opcion">${fon.desc}</div>
+          </div>
+          <div class="check-circulo">
+            ${esSeleccionado ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : ''}
+          </div>
+        `;
+        listaFondosEl.appendChild(div);
+      });
+
+      actualizarTagsEstadoColumnas();
+      actualizarCajaSubopcionesProteina();
+    }
+
+    function seleccionarEntrada(id) {
+      estadoApp.entradaSeleccionadaId = id;
+      renderizarMenuDosColumnas();
+      actualizarBarraInferior();
+      actualizarResumenesVisuales();
+      const ent = obtenerEntradaSeleccionada();
+      if (ent) mostrarToast(`Entrada: ${ent.nombre}`);
+    }
+
+    function seleccionarFondo(id) {
+      estadoApp.fondoSeleccionadoId = id;
+      renderizarMenuDosColumnas();
+      actualizarBarraInferior();
+      actualizarResumenesVisuales();
+      const fon = obtenerFondoSeleccionado();
+      if (fon) mostrarToast(`Fondo: ${fon.nombre}`);
+    }
+
+    function actualizarTagsEstadoColumnas() {
+      const tagEnt = document.getElementById('tag-estado-entrada');
+      const tagFon = document.getElementById('tag-estado-fondo');
+      const ent = obtenerEntradaSeleccionada();
+      const fon = obtenerFondoSeleccionado();
+
+      if (tagEnt) {
+        tagEnt.textContent = ent ? '✓ Elegida' : 'Por elegir';
+        tagEnt.style.color = ent ? 'var(--oliva)' : 'var(--texto-suave)';
+      }
+      if (tagFon) {
+        tagFon.textContent = fon ? '✓ Elegido' : 'Por elegir';
+        tagFon.style.color = fon ? 'var(--oliva)' : 'var(--texto-suave)';
+      }
+    }
+
+    /**
+     * SUB-SELECTOR PARA PALLARES Y ARVERJITAS
+     */
+    function actualizarCajaSubopcionesProteina() {
+      const fon = obtenerFondoSeleccionado();
+      const caja = document.getElementById('caja-subopciones-proteina');
+      const subgrupoPresas = document.getElementById('subgrupo-presas');
+      if (!caja) return;
+
+      if (fon && (fon.id === 'fon-pallares' || fon.id === 'fon-arverjitas')) {
+        caja.style.display = 'block';
+        if (estadoApp.subProteinaLegumbres.tipo === 'Pollo Frito') {
+          subgrupoPresas.style.display = 'block';
+        } else {
+          subgrupoPresas.style.display = 'none';
+        }
+      } else {
+        caja.style.display = 'none';
+      }
+    }
+
+    function seleccionarTipoProteina(tipo) {
+      estadoApp.subProteinaLegumbres.tipo = tipo;
+      const chips = document.querySelectorAll('#grupo-chips-proteina .chip-subopcion');
+      chips.forEach(c => {
+        c.classList.toggle('activo', c.textContent.trim() === tipo);
+      });
+      actualizarCajaSubopcionesProteina();
+      actualizarBarraInferior();
+      actualizarResumenesVisuales();
+      mostrarToast(`Proteína: ${tipo}`);
+    }
+
+    function seleccionarPresa(presa) {
+      estadoApp.subProteinaLegumbres.presa = presa;
+      const chips = document.querySelectorAll('#grupo-chips-presa .chip-subopcion');
+      chips.forEach(c => {
+        c.classList.toggle('activo', c.textContent.trim() === presa);
+      });
+      actualizarBarraInferior();
+      actualizarResumenesVisuales();
+      mostrarToast(`Presa elegida: ${presa}`);
+    }
+
+    /**
+     * RENDERIZAR COMPLEMENTOS (ADICIONALES, BEBIDAS, POSTRES)
+     */
+    function renderizarComplementos() {
+      ['adicionales', 'bebidas', 'postres'].forEach(categoria => {
+        const contenedor = document.getElementById(`contenedor-${categoria}`);
+        if (!contenedor) return;
+        contenedor.innerHTML = '';
+
+        CONFIG_MANTA[categoria].forEach(item => {
+          const cantidad = estadoApp.cantidadesComplementos[item.id] || 0;
+          const card = document.createElement('div');
+          card.className = `tarjeta-complemento ${cantidad > 0 ? 'tiene-items' : ''}`;
+          card.id = `comp-card-${item.id}`;
+
+          card.innerHTML = `
+            <div class="info-complemento">
+              <div class="nombre-complemento">${item.nombre}</div>
+              <div class="desc-complemento">${item.desc}</div>
+              <div class="precio-complemento">${formatearPrecio(item.precio)}</div>
+            </div>
+            <div class="controles-cantidad">
+              <button 
+                type="button" 
+                class="btn-cantidad btn-menos" 
+                onclick="cambiarCantidadComplemento('${item.id}', -1)"
+                ${cantidad === 0 ? 'disabled' : ''}
+              >−</button>
+              <span class="numero-cantidad" id="cant-${item.id}">${cantidad}</span>
+              <button 
+                type="button" 
+                class="btn-cantidad btn-mas" 
+                onclick="cambiarCantidadComplemento('${item.id}', 1)"
+              >+</button>
+            </div>
+          `;
+          contenedor.appendChild(card);
+        });
+      });
+    }
+
+    function cambiarCantidadComplemento(id, delta) {
+      const actual = estadoApp.cantidadesComplementos[id] || 0;
+      const nueva = Math.max(0, actual + delta);
+
+      if (nueva === 0) {
+        delete estadoApp.cantidadesComplementos[id];
+      } else {
+        estadoApp.cantidadesComplementos[id] = nueva;
+      }
+
+      const cantEl = document.getElementById(`cant-${id}`);
+      const cardEl = document.getElementById(`comp-card-${id}`);
+      if (cantEl) cantEl.textContent = nueva;
+
+      if (cardEl) {
+        cardEl.classList.toggle('tiene-items', nueva > 0);
+        const btnMenos = cardEl.querySelector('.btn-menos');
+        if (btnMenos) btnMenos.disabled = (nueva === 0);
+      }
+
+      const comp = obtenerComplementoPorId(id);
+      if (comp && delta > 0) mostrarToast(`+1 ${comp.nombre}`);
+
+      actualizarBarraInferior();
+      actualizarResumenesVisuales();
+    }
+
+    /**
+     * ACTUALIZAR RESÚMENES VISUALES
+     */
+    function actualizarResumenesVisuales() {
+      const ent = obtenerEntradaSeleccionada();
+      const fon = obtenerFondoSeleccionado();
+
+      // 1. Resumen rápido en pantalla de complementos
+      const listaRapida = document.getElementById('lista-resumen-rapido');
+      const resumenRapidoItems = document.getElementById('resumen-rapido-items');
+      if (listaRapida) {
+        listaRapida.innerHTML = '';
+        let totalItems = 1;
+
+        if (ent && fon) {
+          let detalleFondoTexto = fon.nombre;
+          if (fon.id === 'fon-pallares' || fon.id === 'fon-arverjitas') {
+            const sub = estadoApp.subProteinaLegumbres;
+            detalleFondoTexto += ` (con ${sub.tipo === 'Pollo Frito' ? `Pollo Frito - ${sub.presa}` : 'Pechuga'})`;
+          }
+
+          const li = document.createElement('li');
+          li.className = 'item-resumen-rapido';
+          li.innerHTML = `
+            <span><strong>Menú del día:</strong> ${detalleFondoTexto} + ${ent.nombre}</span>
+            <span>${formatearPrecio(CONFIG_MANTA.precioMenuBase)}</span>
+          `;
+          listaRapida.appendChild(li);
+        }
+
+        for (const [id, cant] of Object.entries(estadoApp.cantidadesComplementos)) {
+          if (cant > 0) {
+            const c = obtenerComplementoPorId(id);
+            if (c) {
+              totalItems += cant;
+              const li = document.createElement('li');
+              li.className = 'item-resumen-rapido';
+              li.innerHTML = `<span>${cant}x ${c.nombre}</span> <span>${formatearPrecio(c.precio * cant)}</span>`;
+              listaRapida.appendChild(li);
+            }
+          }
+        }
+
+        if (resumenRapidoItems) {
+          resumenRapidoItems.textContent = `${totalItems} ítem(s) en tu comanda`;
+        }
+      }
+
+      // 2. Resumen en pantalla de pago
+      const detallePago = document.getElementById('resumen-detalle-items');
+      const totalMontoPago = document.getElementById('total-monto-resumen');
+
+      if (detallePago && ent && fon) {
+        let detalleFondoTexto = fon.nombre;
+        if (fon.id === 'fon-pallares' || fon.id === 'fon-arverjitas') {
+          const sub = estadoApp.subProteinaLegumbres;
+          detalleFondoTexto += ` [${sub.tipo === 'Pollo Frito' ? `Pollo Frito: ${sub.presa}` : 'Pechuga'}]`;
+        }
+
+        detallePago.innerHTML = `
+          <div class="linea-detalle">
+            <div class="linea-detalle-nombre">
+              Menú del día
+              <div style="font-size: 0.8rem; color: var(--texto-suave); font-weight: normal; margin-top: 2px;">
+                Fondo: ${detalleFondoTexto}<br>Entrada: ${ent.nombre}
+              </div>
+            </div>
+            <div class="linea-detalle-precio">${formatearPrecio(CONFIG_MANTA.precioMenuBase)}</div>
+          </div>
+        `;
+
+        const extras = Object.entries(estadoApp.cantidadesComplementos).filter(([_, q]) => q > 0);
+        if (extras.length > 0) {
+          const extrasDiv = document.createElement('div');
+          extrasDiv.style.marginTop = '12px';
+          extrasDiv.style.paddingTop = '10px';
+          extrasDiv.style.borderTop = '1px dashed var(--borde-suave)';
+          extrasDiv.innerHTML = `<div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 800; color: var(--texto-suave); margin-bottom: 6px;">Adicionales</div>`;
+
+          extras.forEach(([id, cant]) => {
+            const c = obtenerComplementoPorId(id);
+            if (c) {
+              const div = document.createElement('div');
+              div.className = 'linea-detalle';
+              div.innerHTML = `
+                <div class="linea-detalle-nombre">${cant}x ${c.nombre}</div>
+                <div class="linea-detalle-precio">${formatearPrecio(c.precio * cant)}</div>
+              `;
+              extrasDiv.appendChild(div);
+            }
+          });
+          detallePago.appendChild(extrasDiv);
+        }
+      }
+
+      if (totalMontoPago) {
+        totalMontoPago.textContent = formatearPrecio(calcularTotalPedido());
+      }
+    }
+
+    /**
+     * FORMULARIO: MODALIDAD DE ENTREGA, DIRECCIÓN Y HORARIOS
+     */
+    function cambiarTipoEntrega(tipo) {
+      estadoApp.tipoEntrega = tipo;
+      const tabDeliv = document.getElementById('tab-delivery');
+      const tabRec = document.getElementById('tab-recojo');
+      const bloqueDir = document.getElementById('bloque-direccion-envio');
+      const inputDir = document.getElementById('cliente-direccion');
+
+      if (tipo === 'delivery') {
+        tabDeliv.classList.add('activo');
+        tabRec.classList.remove('activo');
+        bloqueDir.style.display = 'block';
+        inputDir.required = true;
+      } else {
+        tabRec.classList.add('activo');
+        tabDeliv.classList.remove('activo');
+        bloqueDir.style.display = 'none';
+        inputDir.required = false;
+      }
+    }
+
+    function seleccionarHoraEnvio(hora) {
+      estadoApp.datosCliente.horaEnvio = hora;
+      document.getElementById('hora-envio-seleccionada').value = hora;
+
+      const chips = document.querySelectorAll('#chips-horas-envio .chip-hora');
+      chips.forEach(c => c.classList.toggle('activo', c.textContent.trim() === hora));
+    }
+
+    function seleccionarMetodoPago(metodo) {
+      estadoApp.datosCliente.metodoPago = metodo;
+      const cardBilletera = document.getElementById('opcion-yape-plin');
+      const cardEfectivo = document.getElementById('opcion-efectivo');
+      const campoVuelto = document.getElementById('campo-vuelto-efectivo');
+
+      if (metodo === 'billetera') {
+        cardBilletera.classList.add('seleccionado');
+        cardEfectivo.classList.remove('seleccionado');
+        campoVuelto.style.display = 'none';
+      } else {
+        cardEfectivo.classList.add('seleccionado');
+        cardBilletera.classList.remove('seleccionado');
+        campoVuelto.style.display = 'block';
+      }
+    }
+
+    /**
+     * CONFIRMAR PEDIDO, DESCONTAR STOCK Y REGISTRAR EN BD DEL DUEÑO
+     */
+    function confirmarPedido() {
+      const nombreInput = document.getElementById('cliente-nombre');
+      const telefonoInput = document.getElementById('cliente-telefono');
+      const direccionInput = document.getElementById('cliente-direccion');
+      const referenciaInput = document.getElementById('cliente-referencia');
+      const horaInput = document.getElementById('hora-envio-seleccionada');
+      const montoEfectivoInput = document.getElementById('monto-efectivo');
+      const notasInput = document.getElementById('cliente-notas');
+      const alertaError = document.getElementById('alerta-error-formulario');
+      const textoError = document.getElementById('texto-error-formulario');
+
+      const nombre = nombreInput.value.trim();
+      const telefono = telefonoInput.value.trim();
+      const hora = horaInput.value.trim();
+      const direccion = direccionInput ? direccionInput.value.trim() : '';
+      const referencia = referenciaInput ? referenciaInput.value.trim() : '';
+
+      if (!nombre) {
+        mostrarErrorFormulario('Por favor escribe tu nombre.');
+        nombreInput.focus();
+        return;
+      }
+      if (!telefono || telefono.length < 6) {
+        mostrarErrorFormulario('Por favor ingresa un teléfono o WhatsApp de contacto válido.');
+        telefonoInput.focus();
+        return;
+      }
+      if (estadoApp.tipoEntrega === 'delivery' && !direccion) {
+        mostrarErrorFormulario('Por favor escribe la dirección hacia donde se enviará tu pedido.');
+        direccionInput.focus();
+        return;
+      }
+
+      alertaError.classList.remove('visible');
+
+      estadoApp.datosCliente = {
+        nombre,
+        telefono,
+        tipoEntrega: estadoApp.tipoEntrega,
+        direccion: estadoApp.tipoEntrega === 'delivery' ? direccion : 'Recojo en local',
+        referencia: estadoApp.tipoEntrega === 'delivery' ? referencia : '',
+        horaEnvio: hora,
+        metodoPago: estadoApp.datosCliente.metodoPago,
+        montoEfectivo: montoEfectivoInput ? montoEfectivoInput.value.trim() : '',
+        notas: notasInput ? notasInput.value.trim() : ''
+      };
+
+      // Recordar nombre, teléfono y dirección en el dispositivo
+      try {
+        localStorage.setItem('manta_cliente_nombre', nombre);
+        localStorage.setItem('manta_cliente_telefono', telefono);
+        localStorage.setItem('manta_cliente_direccion', direccion);
+        localStorage.setItem('manta_cliente_referencia', referencia);
+      } catch (e) {}
+
+      // Generar código de comanda amigable
+      const randomId = Math.floor(100 + Math.random() * 900);
+      const codigoComanda = `#M-${randomId}`;
+
+      const ent = obtenerEntradaSeleccionada();
+      const fon = obtenerFondoSeleccionado();
+
+      // Guardar objeto de pedido completo
+      const pedidoObj = {
+        codigo: codigoComanda,
+        fechaHora: new Date().toLocaleString(),
+        entrada: { ...ent },
+        fondo: { ...fon },
+        subProteina: (fon.id === 'fon-pallares' || fon.id === 'fon-arverjitas') ? { ...estadoApp.subProteinaLegumbres } : null,
+        adicionales: { ...estadoApp.cantidadesComplementos },
+        total: calcularTotalPedido(),
+        cliente: { ...estadoApp.datosCliente },
+        estado: 'Pendiente' // 'Pendiente', 'En camino', 'Entregado'
+      };
+
+      estadoApp.pedidoConfirmado = pedidoObj;
+
+      // 1. Descontar Stock diario automáticamente
+      descontarStockPedido(
+        estadoApp.entradaSeleccionadaId,
+        estadoApp.fondoSeleccionadoId,
+        pedidoObj.subProteina
+      );
+
+      // 2. Guardar en el registro confidencial para el dueño
+      agregarPedidoAlRegistro(pedidoObj);
+
+      // 3. Generar Ticket y pasar a pantalla confirmación
+      generarTicketConfirmacion();
+      irA('confirmacion');
+
+      // Actualizar vista de stock para que refleje el descuento inmediato
+      renderizarMenuDosColumnas();
+    }
+
+    function mostrarErrorFormulario(mensaje) {
+      const alerta = document.getElementById('alerta-error-formulario');
+      const texto = document.getElementById('texto-error-formulario');
+      texto.textContent = mensaje;
+      alerta.classList.add('visible');
+    }
+
+    /**
+     * GENERAR TICKET FINAL
+     */
+    function generarTicketConfirmacion() {
+      const p = estadoApp.pedidoConfirmado;
+      if (!p) return;
+
+      document.getElementById('ticket-codigo').textContent = p.codigo;
+      document.getElementById('ticket-nombre').textContent = p.cliente.nombre;
+      document.getElementById('ticket-hora').textContent = `${p.cliente.horaEnvio} (${p.cliente.tipoEntrega === 'delivery' ? 'Salida Envío' : 'Recojo'})`;
+      document.getElementById('ticket-telefono').textContent = p.cliente.telefono;
+      document.getElementById('ticket-direccion').textContent = p.cliente.direccion + (p.cliente.referencia ? ` (Ref: ${p.cliente.referencia})` : '');
+
+      const metodoTexto = p.cliente.metodoPago === 'billetera' 
+        ? 'Billeteras (Yape / Plin)' 
+        : `Efectivo${p.cliente.montoEfectivo ? ` (Paga con ${p.cliente.montoEfectivo})` : ''}`;
+      document.getElementById('ticket-pago').textContent = metodoTexto;
+
+      const lista = document.getElementById('ticket-articulos-lista');
+      lista.innerHTML = '';
+
+      // Menú principal
+      let descFondo = p.fondo.nombre;
+      if (p.subProteina) {
+        descFondo += ` [${p.subProteina.tipo === 'Pollo Frito' ? `Pollo Frito - ${p.subProteina.presa}` : 'Pechuga'}]`;
+      }
+
+      const liMenu = document.createElement('li');
+      liMenu.className = 'ticket-item';
+      liMenu.innerHTML = `
+        <div>
+          <strong>1x Menú del día</strong>
+          <div style="font-size: 0.8rem; color: var(--texto-suave);">
+            Fondo: ${descFondo}<br>Entrada: ${p.entrada.nombre}
+          </div>
+        </div>
+        <span style="font-weight: 800;">${formatearPrecio(CONFIG_MANTA.precioMenuBase)}</span>
+      `;
+      lista.appendChild(liMenu);
+
+      // Adicionales
+      for (const [id, cant] of Object.entries(p.adicionales)) {
+        if (cant > 0) {
+          const comp = obtenerComplementoPorId(id);
+          if (comp) {
+            const li = document.createElement('li');
+            li.className = 'ticket-item';
+            li.innerHTML = `
+              <span>${cant}x ${comp.nombre}</span>
+              <span style="font-weight: 800;">${formatearPrecio(comp.precio * cant)}</span>
+            `;
+            lista.appendChild(li);
+          }
+        }
+      }
+
+      document.getElementById('ticket-total-monto').textContent = formatearPrecio(p.total);
+
+      const notaEl = document.getElementById('ticket-nota-cocina');
+      if (p.cliente.notas) {
+        notaEl.textContent = `Nota de cocina: "${p.cliente.notas}"`;
+      } else {
+        notaEl.textContent = `"Tu pedido se despacha en el turno de las ${p.cliente.horaEnvio} hacia ${p.cliente.direccion}."`;
+      }
+    }
+
+    /**
+     * GENERAR TEXTO PARA WHATSAPP
+     */
+    function generarTextoResumenWhatsApp() {
+      const p = estadoApp.pedidoConfirmado;
+      if (!p) return '';
+
+      let fonTexto = p.fondo.nombre;
+      if (p.subProteina) {
+        fonTexto += ` (con ${p.subProteina.tipo === 'Pollo Frito' ? `Pollo Frito - ${p.subProteina.presa}` : 'Pechuga'})`;
+      }
+
+      let msg = `*MANTA • NUEVA COMANDA DE ALMUERZO*\n`;
+      msg += `*Comanda:* ${p.codigo}\n`;
+      msg += `*Cliente:* ${p.cliente.nombre}\n`;
+      msg += `*Teléfono:* ${p.cliente.telefono}\n`;
+      msg += `*Modalidad:* ${p.cliente.tipoEntrega === 'delivery' ? '🛵 Envío a Domicilio' : '🛍️ Recojo en local'}\n`;
+      msg += `*Dirección:* ${p.cliente.direccion}\n`;
+      if (p.cliente.referencia) msg += `*Referencia:* ${p.cliente.referencia}\n`;
+      msg += `*Turno de Salida:* ${p.cliente.horaEnvio}\n`;
+      msg += `--------------------------------\n`;
+      msg += `*1x Menú del día:* ${formatearPrecio(CONFIG_MANTA.precioMenuBase)}\n`;
+      msg += `  • Fondo: ${fonTexto}\n`;
+      msg += `  • Entrada: ${p.entrada.nombre}\n`;
+
+      const extras = Object.entries(p.adicionales).filter(([_, q]) => q > 0);
+      if (extras.length > 0) {
+        msg += `*Adicionales:*\n`;
+        extras.forEach(([id, q]) => {
+          const c = obtenerComplementoPorId(id);
+          if (c) msg += `  • ${q}x ${c.nombre} (${formatearPrecio(c.precio * q)})\n`;
+        });
+      }
+
+      if (p.cliente.notas) msg += `*Nota:* "${p.cliente.notas}"\n`;
+      msg += `--------------------------------\n`;
+      msg += `*PAGO:* ${p.cliente.metodoPago === 'billetera' ? 'Billeteras (Yape / Plin)' : 'Efectivo'}\n`;
+      if (p.cliente.montoEfectivo) msg += `*Paga con:* ${p.cliente.montoEfectivo}\n`;
+      msg += `*TOTAL A COBRAR:* ${formatearPrecio(p.total)}\n`;
+      return msg;
+    }
+
+    function enviarPedidoPorWhatsApp() {
+      const msg = generarTextoResumenWhatsApp();
+      if (!msg) return;
+
+      // Obtener el número guardado del dueño o usar uno estándar
+      const numDueno = localStorage.getItem('manta_whatsapp_dueno') || '';
+      const url = numDueno 
+        ? `https://api.whatsapp.com/send?phone=${numDueno}&text=${encodeURIComponent(msg)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    function copiarResumenComanda() {
+      const msg = generarTextoResumenWhatsApp();
+      if (!msg) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(msg).then(() => {
+          mostrarToast('¡Comanda copiada al portapapeles!');
+        }).catch(() => {
+          mostrarToast('Texto listo');
+        });
+      }
+    }
+
+    function hacerNuevoPedido() {
+      estadoApp.cantidadesComplementos = {};
+      estadoApp.pedidoConfirmado = null;
+      irA('inicio');
+      mostrarToast('Comienza a armar tu almuerzo');
+    }
+
+    /**
+     * MODAL DEL DUEÑO: AUTENTICACIÓN Y GESTIÓN
+     */
+    const PIN_DUENO_DEFAULT = '1234';
+
+    function abrirModalDueno() {
+      document.getElementById('modal-dueno-backdrop').classList.add('activo');
+      document.getElementById('bloque-auth-dueno').style.display = 'block';
+      document.getElementById('bloque-panel-dueno').style.display = 'none';
+      document.getElementById('pin-dueno-input').value = '';
+      document.getElementById('error-pin-dueno').style.display = 'none';
+      setTimeout(() => document.getElementById('pin-dueno-input').focus(), 100);
+    }
+
+    function cerrarModalDueno() {
+      document.getElementById('modal-dueno-backdrop').classList.remove('activo');
+    }
+
+    function cerrarModalDuenoSiFondo(e) {
+      if (e.target.id === 'modal-dueno-backdrop') cerrarModalDueno();
+    }
+
+    function validarPinDueno() {
+      const pinIngresado = document.getElementById('pin-dueno-input').value.trim();
+      const pinGuardado = localStorage.getItem('manta_pin_dueno') || PIN_DUENO_DEFAULT;
+
+      if (pinIngresado === pinGuardado) {
+        document.getElementById('bloque-auth-dueno').style.display = 'none';
+        document.getElementById('bloque-panel-dueno').style.display = 'block';
+        cargarDatosPanelDueno();
+      } else {
+        document.getElementById('error-pin-dueno').style.display = 'block';
+      }
+    }
+
+    function guardarNumeroWhatsAppDueno() {
+      const num = document.getElementById('input-whatsapp-dueno').value.trim().replace(/\D/g, '');
+      if (num) {
+        localStorage.setItem('manta_whatsapp_dueno', num);
+        mostrarToast('Número de WhatsApp guardado correctamente');
+      }
+    }
+
+    /**
+     * CARGAR DATOS EN EL PANEL DEL DUEÑO
+     */
+    function cargarDatosPanelDueno() {
+      // 1. WhatsApp del dueño
+      const numGuardado = localStorage.getItem('manta_whatsapp_dueno') || '';
+      document.getElementById('input-whatsapp-dueno').value = numGuardado;
+
+      // 2. Pedidos y estadísticas
+      const pedidos = obtenerRegistroPedidos();
+      let totalVentas = 0;
+      let pendientes = 0;
+
+      pedidos.forEach(p => {
+        totalVentas += (p.total || 0);
+        if (p.estado !== 'Entregado') pendientes++;
+      });
+
+      document.getElementById('dueno-stat-ventas').textContent = formatearPrecio(totalVentas);
+      document.getElementById('dueno-stat-pedidos').textContent = pedidos.length;
+      document.getElementById('dueno-stat-pendientes').textContent = pendientes;
+
+      filtrarTablaEnvios();
+      cargarAdminStock();
+    }
+
+    function filtrarTablaEnvios() {
+      const pedidos = obtenerRegistroPedidos();
+      const filtro = document.getElementById('filtro-turno-envio').value;
+      const tbody = document.getElementById('cuerpo-tabla-envios');
+      tbody.innerHTML = '';
+
+      const filtrados = filtro === 'todos' ? pedidos : pedidos.filter(p => p.cliente.horaEnvio === filtro);
+
+      if (filtrados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 24px; color: var(--texto-suave);">No hay pedidos en este horario de despacho.</td></tr>`;
+        return;
+      }
+
+      filtrados.forEach(p => {
+        let detalleMenu = `<strong>${p.fondo.nombre}</strong> + ${p.entrada.nombre}`;
+        if (p.subProteina) {
+          detalleMenu += `<br><span style="font-size:0.78rem; color:var(--terracota); font-weight:700;">Proteína: ${p.subProteina.tipo === 'Pollo Frito' ? `${p.subProteina.tipo} (${p.subProteina.presa})` : 'Pechuga'}</span>`;
+        }
+
+        const extras = Object.entries(p.adicionales || {}).filter(([_, q]) => q > 0);
+        if (extras.length > 0) {
+          detalleMenu += `<div style="font-size: 0.76rem; color: var(--texto-suave); margin-top: 3px;">`;
+          extras.forEach(([id, q]) => {
+            const comp = obtenerComplementoPorId(id);
+            if (comp) detalleMenu += `• ${q}x ${comp.nombre} `;
+          });
+          detalleMenu += `</div>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <strong style="color: var(--terracota); font-size: 0.95rem;">${p.codigo}</strong>
+            <div style="font-weight: 800; color: var(--texto-oscuro); margin-top: 2px;">⏰ ${p.cliente.horaEnvio}</div>
+            <div style="font-size: 0.74rem; color: var(--texto-suave);">${p.fechaHora}</div>
+          </td>
+          <td>
+            <strong>${p.cliente.nombre}</strong>
+            <div style="font-size: 0.8rem; color: var(--texto-secundario);">${p.cliente.telefono}</div>
+            <div style="font-size: 0.82rem; margin-top: 4px; color: var(--texto-oscuro);">📍 ${p.cliente.direccion}</div>
+            ${p.cliente.referencia ? `<div style="font-size: 0.75rem; color: var(--texto-suave);">Ref: ${p.cliente.referencia}</div>` : ''}
+          </td>
+          <td>${detalleMenu}</td>
+          <td>
+            <strong style="font-size: 1rem; color: var(--texto-oscuro);">${formatearPrecio(p.total)}</strong>
+            <div style="font-size: 0.78rem; color: var(--texto-secundario);">${p.cliente.metodoPago === 'billetera' ? 'Yape / Plin' : 'Efectivo'}</div>
+            ${p.cliente.montoEfectivo ? `<div style="font-size: 0.72rem; color: var(--terracota);">Vuelto con: ${p.cliente.montoEfectivo}</div>` : ''}
+          </td>
+          <td>
+            <select class="input-texto" style="padding: 4px 8px; font-size: 0.82rem; width: auto;" onchange="cambiarEstadoPedido('${p.codigo}', this.value)">
+              <option value="Pendiente" ${p.estado === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+              <option value="En camino" ${p.estado === 'En camino' ? 'selected' : ''}>🛵 En camino</option>
+              <option value="Entregado" ${p.estado === 'Entregado' ? 'selected' : ''}>✅ Entregado</option>
+            </select>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function cambiarEstadoPedido(codigo, nuevoEstado) {
+      const pedidos = obtenerRegistroPedidos();
+      const p = pedidos.find(item => item.codigo === codigo);
+      if (p) {
+        p.estado = nuevoEstado;
+        guardarRegistroPedidos(pedidos);
+        cargarDatosPanelDueno();
+        mostrarToast(`Pedido ${codigo} actualizado a: ${nuevoEstado}`);
+      }
+    }
+
+    /**
+     * CARGAR Y EDITAR STOCK EN PANEL DE CONTROL
+     */
+    function cargarAdminStock() {
+      const stock = obtenerStockActual();
+      const contenedor = document.getElementById('contenedor-admin-stock');
+      contenedor.innerHTML = '';
+
+      // Entradas
+      CONFIG_MANTA.entradas.forEach(ent => {
+        crearItemAdminStock(contenedor, ent.nombre, stock[ent.id] || 0, (val) => {
+          stock[ent.id] = val;
+          guardarStock(stock);
+          renderizarMenuDosColumnas();
+        });
+      });
+
+      // Fondos
+      CONFIG_MANTA.fondos.forEach(fon => {
+        crearItemAdminStock(contenedor, fon.nombre, stock[fon.id] || 0, (val) => {
+          stock[fon.id] = val;
+          guardarStock(stock);
+          renderizarMenuDosColumnas();
+        });
+      });
+
+      // Presas
+      const presasMap = [
+        { key: 'presa-pecho', nombre: 'Pollo: Pecho' },
+        { key: 'presa-pierna', nombre: 'Pollo: Pierna' },
+        { key: 'presa-entrepierna', nombre: 'Pollo: Entrepierna' },
+        { key: 'prot-pechuga', nombre: 'Pechuga a la plancha' }
+      ];
+
+      presasMap.forEach(pr => {
+        crearItemAdminStock(contenedor, pr.nombre, stock[pr.key] || 0, (val) => {
+          stock[pr.key] = val;
+          guardarStock(stock);
+          renderizarMenuDosColumnas();
+        });
+      });
+    }
+
+    function crearItemAdminStock(contenedor, nombre, cantidad, onUpdate) {
+      const div = document.createElement('div');
+      div.className = 'stock-admin-item';
+      div.innerHTML = `
+        <span style="font-size: 0.86rem; font-weight: 700; color: var(--texto-oscuro);">${nombre}</span>
+        <input type="number" class="stock-input" min="0" value="${cantidad}">
+      `;
+      const inp = div.querySelector('input');
+      inp.onchange = () => onUpdate(parseInt(inp.value) || 0);
+      contenedor.appendChild(div);
+    }
+
+    function reiniciarStockDiarioCompleto() {
+      if (confirm('¿Deseas reiniciar todas las porciones al stock diario completo?')) {
+        guardarStock({ ...STOCK_INICIAL_DEFECTO });
+        cargarAdminStock();
+        renderizarMenuDosColumnas();
+        mostrarToast('Stock reiniciado con éxito para hoy');
+      }
+    }
+
+    function exportarRegistroCSV() {
+      const pedidos = obtenerRegistroPedidos();
+      if (pedidos.length === 0) {
+        mostrarToast('No hay pedidos para exportar.');
+        return;
+      }
+
+      let csv = 'Comanda,Fecha,Hora Salida,Cliente,Telefono,Direccion,Entrada,Fondo,Proteina,Total,Metodo Pago,Estado\n';
+      pedidos.forEach(p => {
+        const prot = p.subProteina ? `${p.subProteina.tipo} ${p.subProteina.presa || ''}` : '-';
+        csv += `"${p.codigo}","${p.fechaHora}","${p.cliente.horaEnvio}","${p.cliente.nombre}","${p.cliente.telefono}","${p.cliente.direccion}","${p.entrada.nombre}","${p.fondo.nombre}","${prot}","${p.total}","${p.cliente.metodoPago}","${p.estado}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `MANTA_Envios_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    /**
+     * NOTIFICACIONES TOAST
+     */
+    let timeoutToast = null;
+    function mostrarToast(mensaje) {
+      const toast = document.getElementById('toast-notificacion');
+      const msgEl = document.getElementById('toast-mensaje');
+      if (!toast || !msgEl) return;
+
+      msgEl.textContent = mensaje;
+      toast.classList.add('visible');
+
+      clearTimeout(timeoutToast);
+      timeoutToast = setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 2600);
+    }
+
+    /**
+     * INICIALIZACIÓN AL CARGAR
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Iniciar stock si no existe
+      if (!localStorage.getItem('manta_stock_diario')) {
+        guardarStock({ ...STOCK_INICIAL_DEFECTO });
+      }
+
+      // 2. Renderizar componentes
+      renderizarMenuDosColumnas();
+      renderizarComplementos();
+      actualizarBarraInferior();
+      actualizarIndicadorPasos();
+      actualizarResumenesVisuales();
+
+      // 3. Autocompletar datos del cliente si ya ordenó antes
+      try {
+        const nom = localStorage.getItem('manta_cliente_nombre');
+        const tel = localStorage.getItem('manta_cliente_telefono');
+        const dir = localStorage.getItem('manta_cliente_direccion');
+        const ref = localStorage.getItem('manta_cliente_referencia');
+
+        if (nom) document.getElementById('cliente-nombre').value = nom;
+        if (tel) document.getElementById('cliente-telefono').value = tel;
+        if (dir) document.getElementById('cliente-direccion').value = dir;
+        if (ref) document.getElementById('cliente-referencia').value = ref;
+      } catch (e) {}
+    });
+  </script>
+</body>
+</html>
